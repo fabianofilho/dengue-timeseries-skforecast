@@ -1,0 +1,74 @@
+[
+  {
+    "city": "sao_paulo",
+    "geocode": 3550308,
+    "uf": "SP",
+    "n_weeks": 782,
+    "date_min": "2010-01-03",
+    "date_max": "2024-12-22",
+    "total_casos": 1711689
+  },
+  {
+    "city": "rio_de_janeiro",
+    "geocode": 3304557,
+    "uf": "RJ",
+    "n_weeks": 782,
+    "date_min": "2010-01-03",
+    "date_max": "2024-12-22",
+    "total_casos": 638433
+  },
+  {
+    "city": "belo_horizonte",
+    "geocode": 3106200,
+    "uf": "MG",
+    "n_weeks": 782,
+    "date_min": "2010-01-03",
+    "date_max": "2024-12-22",
+    "total_casos": 1086158
+  },
+  {
+    "city": "brasilia",
+    "geocode": 5300108,
+    "uf": "DF",
+    "n_weeks": 782,
+    "date_min": "2010-01-03",
+    "date_max": "2024-12-22",
+    "total_casos": 724545
+  },
+  {
+    "city": "fortaleza",
+    "geocode": 2304400,
+    "uf": "CE",
+    "n_weeks": 782,
+    "date_min": "2010-01-03",
+    "date_max": "2024-12-22",
+    "total_casos": 382040
+  },
+  {
+    "city": "recife",
+    "geocode": 2611606,
+    "uf": "PE",
+    "n_weeks": 782,
+    "date_min": "2010-01-03",
+    "date_max": "2024-12-22",
+    "total_casos": 185593
+  },
+  {
+    "city": "manaus",
+    "geocode": 1302603,
+    "uf": "AM",
+    "n_weeks": 782,
+    "date_min": "2010-01-03",
+    "date_max": "2024-12-22",
+    "total_casos": 132282
+  },
+  {
+    "city": "salvador",
+    "geocode": 2927408,
+    "uf": "BA",
+    "n_weeks": 782,
+    "date_min": "2010-01-03",
+    "date_max": "2024-12-22",
+    "total_casos": 116817
+  }
+]
