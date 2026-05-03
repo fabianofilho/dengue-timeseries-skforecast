@@ -3,11 +3,12 @@ Implementação dos modelos de forecasting usando skforecast.
 
 Modelos incluídos:
 - SARIMAX (baseline estatístico)
+- Prophet (Meta)
 - LightGBM
 - XGBoost
 - CatBoost
 - RandomForest
-- Ridge
+- TimesFM (Google, zero-shot foundation model)
 """
 from __future__ import annotations
 
@@ -16,15 +17,28 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 import pandas as pd
+
+# timesfm deve ser importado antes de catboost/lightgbm/xgboost para evitar
+# conflito de bibliotecas nativas que causa segfault no macOS ARM
+try:
+    import timesfm as _timesfm
+    _TIMESFM_AVAILABLE = True
+except ImportError:
+    _TIMESFM_AVAILABLE = False
+
 from catboost import CatBoostRegressor
 from lightgbm import LGBMRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Ridge
 from skforecast.recursive import ForecasterRecursive
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from xgboost import XGBRegressor
 
 warnings.filterwarnings("ignore", category=FutureWarning)
+try:
+    from skforecast.exceptions import IgnoredArgumentWarning
+    warnings.filterwarnings("ignore", category=IgnoredArgumentWarning)
+except ImportError:
+    pass
 
 
 class Forecaster(ABC):
@@ -108,9 +122,60 @@ def randomforest_forecaster(lags: int = 24) -> SkforecastWrapper:
     )
 
 
-def ridge_forecaster(lags: int = 24) -> SkforecastWrapper:
-    return SkforecastWrapper(
-        estimator=Ridge(random_state=42),
-        lags=lags,
-        name="ridge",
-    )
+class ProphetForecaster(Forecaster):
+    """Wrapper para o Prophet (Meta)."""
+
+    name = "prophet"
+
+    def forecast(self, train: pd.Series, horizon: int) -> np.ndarray:
+        from prophet import Prophet  # lazy import
+
+        df = train.reset_index()
+        df.columns = ["ds", "y"]
+        df["ds"] = pd.to_datetime(df["ds"])
+
+        model = Prophet(yearly_seasonality=True, weekly_seasonality=False, daily_seasonality=False)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            model.fit(df)
+
+        future = model.make_future_dataframe(periods=horizon, freq="MS")
+        forecast = model.predict(future)
+        preds = forecast["yhat"].iloc[-horizon:].to_numpy(dtype=float)
+        return np.maximum(0, preds)
+
+
+class TimesFMForecaster(Forecaster):
+    """Wrapper zero-shot para TimesFM 2.5 do Google.
+
+    Modelo de fundação pré-treinado: não requer treinamento.
+    O contexto histórico é passado diretamente ao modelo via HuggingFace.
+    O modelo é carregado uma única vez e cacheado na classe.
+    """
+
+    name = "timesfm"
+    _model = None  # cache de classe para evitar recarregamento a cada fold
+
+    def _get_model(self):
+        if TimesFMForecaster._model is None:
+            if not _TIMESFM_AVAILABLE:
+                raise ImportError("timesfm nao instalado. Execute: pip install 'timesfm[torch] @ git+https://github.com/google-research/timesfm.git'")
+            model = _timesfm.TimesFM_2p5_200M_torch.from_pretrained(
+                "google/timesfm-2.5-200m-pytorch"
+            )
+            model.compile(
+                _timesfm.ForecastConfig(
+                    max_context=512,
+                    max_horizon=24,
+                    normalize_inputs=True,
+                    infer_is_positive=True,
+                )
+            )
+            TimesFMForecaster._model = model
+        return TimesFMForecaster._model
+
+    def forecast(self, train: pd.Series, horizon: int) -> np.ndarray:
+        model = self._get_model()
+        context = train.to_numpy(dtype=float)
+        point_forecast, _ = model.forecast(horizon=horizon, inputs=[context])
+        return np.maximum(0, point_forecast[0])

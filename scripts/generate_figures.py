@@ -51,6 +51,29 @@ def plot_all_series() -> None:
     print(f"[INFO] Figura salva em {out}")
 
 
+CITY_FILE_MAP = {
+    "sao_paulo": "sao",
+    "rio": "rio",
+    "belo_horizonte": "belo",
+    "brasilia": "brasilia",
+    "fortaleza": "fortaleza",
+    "recife": "recife",
+    "manaus": "manaus",
+    "salvador": "salvador",
+}
+
+CITY_DISPLAY = {
+    "sao_paulo": "São Paulo",
+    "rio": "Rio de Janeiro",
+    "belo_horizonte": "Belo Horizonte",
+    "brasilia": "Brasília",
+    "fortaleza": "Fortaleza",
+    "recife": "Recife",
+    "manaus": "Manaus",
+    "salvador": "Salvador",
+}
+
+
 def plot_benchmark_results() -> None:
     """Plota os resultados do benchmark de São Paulo."""
     metrics_path = Path("results/benchmark_sao_paulo_metrics.csv")
@@ -81,6 +104,111 @@ def plot_benchmark_results() -> None:
     plt.suptitle("Benchmark de Modelos — São Paulo (2010–2024)", fontsize=14, fontweight="bold")
     plt.tight_layout()
     out = FIGURES_DIR / "benchmark_sao_paulo.png"
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"[INFO] Figura salva em {out}")
+
+
+def plot_all_cities_smape_heatmap() -> None:
+    """Heatmap de sMAPE para todos os modelos e cidades."""
+    frames = []
+    for city_key, _ in CITY_FILE_MAP.items():
+        path = Path(f"results/benchmark_{city_key}_metrics.csv")
+        if not path.exists():
+            continue
+        df = pd.read_csv(path)[["model", "smape"]]
+        df["city"] = CITY_DISPLAY.get(city_key, city_key)
+        frames.append(df)
+
+    if not frames:
+        print("[WARN] Nenhum arquivo de métricas encontrado para heatmap.")
+        return
+
+    all_df = pd.concat(frames, ignore_index=True)
+    pivot = all_df.pivot(index="model", columns="city", values="smape")
+    pivot = pivot.loc[pivot.mean(axis=1).sort_values().index]
+
+    fig, ax = plt.subplots(figsize=(14, 6))
+    sns.heatmap(
+        pivot,
+        annot=True,
+        fmt=".1f",
+        cmap="YlOrRd",
+        ax=ax,
+        linewidths=0.5,
+        cbar_kws={"label": "sMAPE (%)"},
+    )
+    ax.set_title("sMAPE por Modelo e Cidade — Benchmark Dengue 2010-2024", fontsize=14, fontweight="bold")
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.tick_params(axis="x", rotation=30)
+    plt.tight_layout()
+    out = FIGURES_DIR / "smape_heatmap_todas_cidades.png"
+    plt.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"[INFO] Figura salva em {out}")
+
+
+def plot_timesfm_ranking() -> None:
+    """Mostra o ranking do TimesFM em cada cidade e o sMAPE comparado ao melhor concorrente."""
+    frames = []
+    for city_key, _ in CITY_FILE_MAP.items():
+        path = Path(f"results/benchmark_{city_key}_metrics.csv")
+        if not path.exists():
+            continue
+        df = pd.read_csv(path).sort_values("smape").reset_index(drop=True)
+        df["rank"] = df.index + 1
+        row_tfm = df[df["model"] == "timesfm"]
+        if row_tfm.empty:
+            continue
+        rank = int(row_tfm["rank"].values[0])
+        smape_tfm = float(row_tfm["smape"].values[0])
+        best_other = df[df["model"] != "timesfm"].iloc[0]
+        smape_best = float(best_other["smape"])
+        frames.append({
+            "city": CITY_DISPLAY.get(city_key, city_key),
+            "rank": rank,
+            "smape_timesfm": smape_tfm,
+            "smape_best_other": smape_best,
+            "best_other_model": best_other["model"],
+        })
+
+    if not frames:
+        return
+
+    df = pd.DataFrame(frames).sort_values("smape_timesfm")
+
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+    # Painel esquerdo: ranking por cidade
+    colors = ["gold" if r == 1 else ("steelblue" if r <= 3 else "salmon") for r in df["rank"]]
+    axes[0].barh(df["city"], df["rank"], color=colors)
+    axes[0].invert_yaxis()
+    axes[0].set_xlabel("Ranking (1 = melhor)")
+    axes[0].set_title("Ranking do TimesFM por Cidade", fontweight="bold")
+    axes[0].axvline(1, color="gold", linestyle="--", linewidth=1.5, label="1o lugar")
+    axes[0].legend()
+    for i, (rank, city) in enumerate(zip(df["rank"], df["city"])):
+        axes[0].text(rank + 0.05, i, f"{rank}o", va="center", fontsize=10)
+
+    # Painel direito: sMAPE TimesFM vs melhor concorrente
+    x = range(len(df))
+    width = 0.35
+    bars1 = axes[1].bar([i - width/2 for i in x], df["smape_timesfm"], width, label="TimesFM", color="steelblue")
+    bars2 = axes[1].bar([i + width/2 for i in x], df["smape_best_other"], width, label="Melhor concorrente", color="salmon")
+    axes[1].set_xticks(list(x))
+    axes[1].set_xticklabels(df["city"], rotation=30, ha="right")
+    axes[1].set_ylabel("sMAPE (%)")
+    axes[1].set_title("TimesFM vs Melhor Concorrente por Cidade", fontweight="bold")
+    axes[1].legend()
+    for bar in bars1:
+        axes[1].text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5, f"{bar.get_height():.1f}", ha="center", fontsize=8)
+    for bar in bars2:
+        axes[1].text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.5, f"{bar.get_height():.1f}", ha="center", fontsize=8)
+
+    plt.suptitle("Desempenho do TimesFM (Zero-Shot) — 8 Capitais Brasileiras", fontsize=14, fontweight="bold")
+    plt.tight_layout()
+    out = FIGURES_DIR / "timesfm_ranking_todas_cidades.png"
     plt.savefig(out, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"[INFO] Figura salva em {out}")
@@ -122,3 +250,5 @@ if __name__ == "__main__":
     plot_all_series()
     plot_benchmark_results()
     plot_predictions_vs_actual()
+    plot_all_cities_smape_heatmap()
+    plot_timesfm_ranking()

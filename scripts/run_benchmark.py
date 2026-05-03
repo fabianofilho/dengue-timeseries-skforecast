@@ -15,11 +15,12 @@ import pandas as pd
 
 from dengue_forecast.evaluate import run_backtest
 from dengue_forecast.models import (
+    ProphetForecaster,
     SarimaxForecaster,
+    TimesFMForecaster,
     catboost_forecaster,
     lgbm_forecaster,
     randomforest_forecaster,
-    ridge_forecaster,
     xgboost_forecaster,
 )
 
@@ -33,7 +34,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-train-size", type=int, default=48, help="Janela mínima de treino (meses)")
     parser.add_argument(
         "--models",
-        default="sarimax,lgbm,xgboost,catboost,randomforest,ridge",
+        default="sarimax,prophet,lgbm,xgboost,catboost,randomforest,timesfm",
         help="Lista de modelos para rodar (separados por vírgula)",
     )
     parser.add_argument("--output-prefix", required=True, help="Prefixo para os arquivos de saída")
@@ -47,6 +48,8 @@ def build_models(model_names: list[str], lags: int):
     models = []
     if "sarimax" in selected:
         models.append(SarimaxForecaster(order=(1, 1, 1), seasonal_order=(1, 1, 0, 12)))
+    if "prophet" in selected:
+        models.append(ProphetForecaster())
     if "lgbm" in selected:
         models.append(lgbm_forecaster(lags=lags))
     if "xgboost" in selected:
@@ -55,8 +58,8 @@ def build_models(model_names: list[str], lags: int):
         models.append(catboost_forecaster(lags=lags))
     if "randomforest" in selected:
         models.append(randomforest_forecaster(lags=lags))
-    if "ridge" in selected:
-        models.append(ridge_forecaster(lags=lags))
+    if "timesfm" in selected:
+        models.append(TimesFMForecaster())
 
     if not models:
         raise ValueError("Nenhum modelo válido selecionado.")

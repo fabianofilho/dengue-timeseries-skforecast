@@ -9,3 +9,6 @@ requests>=2.31.0
 matplotlib>=3.7.0
 seaborn>=0.13.0
 ipykernel>=6.25.0
+prophet>=1.1.0
+# TimesFM 2.5 (Google) - instalar do GitHub com Python>=3.10:
+# uv pip install "timesfm[torch] @ git+https://github.com/google-research/timesfm.git"

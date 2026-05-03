@@ -1,11 +1,11 @@
-PYTHON ?= python3
-PIP ?= pip3
+PYTHON ?= /opt/miniconda3/envs/dsc/bin/python
+UV ?= $(HOME)/.local/bin/uv
 
 .PHONY: setup fetch-data process-data benchmark-all benchmark-sp
 
 setup:
-	$(PIP) install --upgrade pip
-	$(PIP) install -r requirements.txt
+	$(UV) pip install --python $(PYTHON) -r requirements.txt
+	$(UV) pip install --python $(PYTHON) "timesfm[torch] @ git+https://github.com/google-research/timesfm.git"
 
 fetch-data:
 	$(PYTHON) scripts/fetch_infodengue.py --output-dir data/raw
