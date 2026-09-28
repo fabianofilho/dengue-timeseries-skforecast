@@ -5,7 +5,7 @@
 **Authors:** Fabiano Bozza Filho^1^
 
 **Affiliations:**  
-^1^ [Institution: to complete]
+^1^ Laboratorio de Big Data e Analise Preditiva em Saude (LABDAPS), Faculdade de Saude Publica, Universidade de Sao Paulo, Sao Paulo, Brazil
 
 **Corresponding author:** Fabiano Bozza Filho, fabiano.nb@gmail.com
 
@@ -41,53 +41,59 @@ We address this gap with a systematic multi-city benchmark comparing TimesFM 2.5
 
 ## 2. Methods
 
-This study follows the TRIPOD+AI 2024 reporting guideline for predictive model evaluation [Collins2024tripod]. Code and data are available at https://github.com/fabianofilho/dengue-timeseries-skforecast.
+This study follows the TRIPOD+AI 2024 reporting guideline for predictive model evaluation [Collins2024tripod]. Code, processed data, and all result files are available at https://github.com/fabianofilho/dengue-timeseries-skforecast (release tag `paper-v2`).
 
 ### 2.1 Data source and study population
 
-We used monthly dengue case counts retrieved from InfoDengue, a collaborative surveillance platform maintained by Fundacao Oswaldo Cruz (Fiocruz) and Fundacao Getulio Vargas (FGV) that aggregates mandatory notification data from Brazil's national disease reporting system (SINAN) [Codeco2018infodengue]. Data were obtained via the InfoDengue public API for eight state capitals: Sao Paulo (SP), Rio de Janeiro (RJ), Belo Horizonte (MG), Brasilia (DF), Fortaleza (CE), Recife (PE), Manaus (AM), and Salvador (BA). These cities were selected to represent the five geographic macroregions of Brazil and encompass hyperendemic (Sao Paulo, Rio de Janeiro), endemic (Belo Horizonte, Fortaleza, Recife, Salvador, Brasilia), and hypoendemic (Manaus, relative to other capitals) transmission profiles.
+We used dengue case counts retrieved from InfoDengue, a surveillance platform maintained by Fundacao Oswaldo Cruz (Fiocruz) and Fundacao Getulio Vargas (FGV) that aggregates mandatory notifications from Brazil's national notifiable diseases information system (SINAN) [Codeco2018infodengue]. Data were obtained through the InfoDengue public API for eight state capitals: Sao Paulo (SP), Rio de Janeiro (RJ), Belo Horizonte (MG), Brasilia (DF), Fortaleza (CE), Recife (PE), Manaus (AM), and Salvador (BA), covering the five geographic macroregions of Brazil.
 
-The study period spanned January 2010 to December 2024 (180 monthly observations per city). Weekly notified dengue cases were aggregated to monthly totals using the month-start convention. Missing weeks (fewer than 0.5% of observations across all series) were imputed by linear interpolation before aggregation. This study used exclusively anonymized, publicly available aggregate surveillance data; individual-level records were neither accessed nor requested.
+The API returns weekly counts by epidemiological week. We used the notified case count (`casos`), not the nowcast-corrected estimate (`casos_est`), so that each forecast origin only used counts that were already reported. Weekly counts were summed into calendar months, assigning each epidemiological week to the month in which it starts. The study period spanned January 2010 to December 2024 (180 months per city). No month was missing and no city had a month with zero notified cases, so no imputation was needed. Only anonymized, publicly available aggregate data were used.
 
 ### 2.2 Outcome
 
-The outcome was the total number of notified dengue cases per city per calendar month (a non-negative integer count). No further transformation was applied prior to model fitting. Forecasts below zero were clipped to zero.
+The outcome was the total number of notified dengue cases per city per calendar month. Because dengue counts vary over three orders of magnitude between inter-epidemic troughs and epidemic peaks, all trained models (SARIMA, Prophet, and the four tree ensembles) were fitted on log1p(y) and their forecasts back-transformed with expm1. This choice was fixed before the analysis reported here was run. Tree ensembles fitted on the raw scale cannot predict values above the maximum seen in training, which disadvantages them in record epidemic years such as 2024; the raw-scale versions are reported as a sensitivity analysis. TimesFM received the raw series, which is its intended input (it applies its own internal normalization). Negative forecasts were clipped to zero.
 
 ### 2.3 Forecasting models
 
-Seven models were evaluated:
+Eight models formed the primary comparison set.
 
-**SARIMAX.** Seasonal autoregressive integrated moving average with exogenous regressors, fitted with order (1,1,1) and seasonal order (1,1,0,12), implemented via statsmodels 0.14. Parameters were fixed across all cities and folds to maintain reproducibility and avoid overfitting to fold-specific sample sizes.
+**Seasonal naive.** The forecast for each month repeats the count observed in the same calendar month of the last year of the training window. It requires no fitting and is the reference that any forecasting model should beat [Hewamalage2023].
 
-**Prophet.** An additive decomposition model with piecewise linear trend, yearly Fourier seasonality, and automatic changepoint detection, as implemented by Meta [Taylor2018prophet]. Weekly and daily seasonality components were disabled given the monthly frequency.
+**SARIMA.** Seasonal ARIMA with order (1,1,1) and seasonal order (1,1,0)12, fitted by maximum likelihood in statsmodels. No exogenous regressors were used. Orders were fixed across cities and folds.
 
-**LightGBM, XGBoost, CatBoost, Random Forest.** Four gradient-boosted tree and ensemble regressors [Chen2016xgboost, Ke2017lightgbm, Prokhorenkova2018catboost, Breiman2001] were wrapped in a recursive multi-step forecasting framework (ForecasterRecursive, skforecast 0.12) using 24 autoregressive lags. Each model was trained independently per fold on the available training window; no external covariates were used. Fixed hyperparameters were used across all experiments (random_state = 42).
+**Prophet.** An additive decomposition model with piecewise linear trend, yearly Fourier seasonality, and automatic changepoint detection [Taylor2018prophet]. Weekly and daily components were disabled given the monthly frequency. Default priors were used.
 
-**TimesFM 2.5.** A 200-million-parameter decoder-only transformer pre-trained by Google DeepMind on a large corpus of time series data from diverse domains [Das2024timesfm]. The model was loaded from the HuggingFace Hub (checkpoint google/timesfm-2.5-200m-pytorch) and configured with maximum context length of 512, maximum horizon of 24, input normalization enabled, and positivity constraint enabled (infer_is_positive = True). TimesFM was used in zero-shot mode throughout: no fine-tuning, no city-specific adaptation, and no retraining across folds. Model weights were cached after the first load and reused across all folds and cities.
+**LightGBM, XGBoost, CatBoost, Random Forest.** Four tree ensembles [Ke2017lightgbm, Chen2016xgboost, Prokhorenkova2018catboost, Breiman2001] were wrapped in a recursive multi-step forecaster (ForecasterRecursive, skforecast) with 24 autoregressive lags and no covariates. Library default hyperparameters were used (Random Forest with 100 trees), with random_state = 42 and a single thread per model for deterministic results. Each model was refitted at every forecast origin on all data available up to that origin.
+
+**TimesFM 2.5.** A decoder-only transformer foundation model released by Google Research in September 2025 as the checkpoint google/timesfm-2.5-200m-pytorch [Das2024timesfm, TimesFM25card]. According to its model card, it was pre-trained on the GIFT-Eval pre-training corpus [Aksu2024gifteval], Wikimedia pageviews (to November 2023), Google Trends top queries (to end of 2022), and synthetic data. We used it zero-shot: no fine-tuning and no city-specific adaptation. At each origin the full available history (48 to 168 months, below the configured maximum context of 512) was passed as context, with input normalization and the positivity constraint enabled. The point forecast was used.
 
 ### 2.4 Evaluation design
 
-We used rolling-origin cross-validation [Tashman2000, Hewamalage2023], in which the training window expands by one month at each fold while the forecast horizon remains fixed at 12 months. The minimum training window was set to 48 months (four years) to ensure that all supervised models could capture at least two full annual dengue cycles. For a series of length T = 180 with minimum training size m = 48 and horizon h = 12, the number of folds is T - m - h + 1 = 121 per city per model. Each fold produced 12 step-ahead predictions, yielding 1,452 predictions per model per city and 81,312 predictions in total across the full benchmark.
-
-This design was chosen explicitly to avoid temporal data leakage: the model at each fold has access only to data that would have been available at the time of forecast in a real surveillance setting [Kapoor2023].
+We used rolling-origin evaluation with an expanding window [Tashman2000, Hewamalage2023]. The first origin used 48 months of training data (January 2010 to December 2013) and each subsequent origin added one month. At each origin, every model produced forecasts for the next 12 months. With T = 180 months, minimum training size m = 48, and horizon h = 12, there were T - m - h + 1 = 121 origins per city (forecast windows starting January 2014 to January 2024), giving 1,452 forecasts per model per city. Every model saw exactly the same training data and was scored on exactly the same target months. No information from a forecast window was used for fitting, feature construction, or model configuration at that origin [Kapoor2023].
 
 ### 2.5 Performance metrics
 
-Three metrics were computed by pooling all predictions across folds per model per city:
+Metrics were computed by pooling all 1,452 forecasts per model and city.
 
-**sMAPE** (symmetric mean absolute percentage error, primary metric):
+**sMAPE** (primary): sMAPE = (100/n) * sum[ |y_t - yhat_t| / ((|y_t| + |yhat_t|) / 2) ]. sMAPE is scale-free, which allows comparison across cities whose counts differ by two orders of magnitude, and it is common in the dengue forecasting literature. It is not symmetric in practice: it penalizes under-forecasts of low counts more than over-forecasts [Hewamalage2023]. We therefore also report MASE.
 
-sMAPE = (1/n) * sum[ |y_t - y_hat_t| / ((|y_t| + |y_hat_t|) / 2) ] * 100
+**MASE**: absolute error divided by the in-sample mean absolute error of the seasonal naive forecast on the training window of the same origin [HyndmanKoehler2006]. MASE below 1 means the model beat the in-sample seasonal naive benchmark.
 
-sMAPE is bounded and symmetric with respect to over- and under-forecasting, making it appropriate for dengue series with high variance and frequent near-zero periods outside outbreak seasons [Hewamalage2023].
+**MAE and RMSE** in cases per month are reported in the supplement; RMSE is dominated by the largest epidemic months.
 
-**MAE** (mean absolute error) and **RMSE** (root mean squared error) were reported as secondary metrics. RMSE penalizes large errors more heavily and is informative given the high-magnitude outlier peaks characteristic of dengue epidemics.
+### 2.6 Statistical inference
 
-Rankings were assigned per city based on sMAPE (rank 1 = lowest sMAPE). Overall ranking was summarized as the number of cities in which each model achieved first place.
+The 121 forecast origins of a city overlap (each target month is forecast from up to 12 origins), and forecast errors are serially correlated, so the 1,452 forecasts are not independent. Treating them as independent would produce confidence intervals that are too narrow. We therefore resampled forecast origins rather than individual forecasts, using a moving block bootstrap [Kunsch1989] with blocks of 12 consecutive origins and 2,000 replicates, and recomputed each pooled metric in every replicate. For the difference between TimesFM and each comparator, both models were evaluated on the same resampled origins, giving a paired 95% percentile interval.
 
-### 2.6 Software
+We also tested TimesFM against each comparator with the Diebold-Mariano test [DieboldMariano1995] applied to the series of 121 origin-level losses (mean sMAPE over the 12 forecast months of each origin). The long-run variance was estimated with a Bartlett (Newey-West) kernel with 12 lags, and the statistic was multiplied by the Harvey-Leybourne-Newbold small-sample correction and compared with a t distribution with 120 degrees of freedom [HarveyLeybourneNewbold1997]. P-values were adjusted with the Holm procedure across all 56 comparisons (8 cities x 7 comparators) [Holm1979].
 
-Python 3.11 was used throughout. Key packages: pandas 2.x, scikit-learn 1.3, skforecast 0.12, statsmodels 0.14, lightgbm 4.x, xgboost 2.x, catboost 1.2, timesfm 2.0. All experiments ran on Apple M-series hardware (CPU-only inference for TimesFM). The full pipeline, including data acquisition, preprocessing, backtesting, and figure generation, is reproducible via the public repository.
+### 2.7 Sensitivity analyses
+
+Two sensitivity analyses were pre-specified. First, all trained models were refitted on the untransformed counts, reproducing the configuration of an earlier version of this analysis. Second, because 2024 was the largest dengue epidemic on record in Brazil [GurgelGoncalves2024], we restricted the evaluation to the 110 origins whose 12-month forecast window ended by December 2023.
+
+### 2.8 Software and reproducibility
+
+Analyses ran in Python 3.10.18 with pandas 2.3.1, numpy 2.0.2, scikit-learn 1.6.1, skforecast 0.20.1, statsmodels 0.14.4, prophet 1.3.0, lightgbm 4.6.0, xgboost 3.0.2, catboost 1.2.8, scipy 1.15.3, torch 2.8.0, and the timesfm package 2.0.0, on an Apple M4 CPU (TimesFM inference on CPU). Every number in the tables and text is produced by `scripts/analyze_results.py` from the saved forecasts; the full pipeline runs with `make benchmark-all analysis figures`.
 
 ---
 
@@ -244,6 +250,13 @@ This study used publicly available, aggregated surveillance data without individ
 21. Ke G et al. LightGBM: A Highly Efficient Gradient Boosting Decision Tree. NeurIPS 2017. [Ke2017lightgbm]
 22. Prokhorenkova L et al. CatBoost: Unbiased Boosting with Categorical Features. NeurIPS 2018. arXiv:1706.09516 [Prokhorenkova2018catboost]
 23. Breiman L. Random Forests. Machine Learning. 2001. doi:10.1023/A:1010933404324 [Breiman2001]
+24. Hyndman RJ, Koehler AB. Another look at measures of forecast accuracy. Int J Forecasting. 2006. doi:10.1016/j.ijforecast.2006.03.001 [HyndmanKoehler2006]
+25. Diebold FX, Mariano RS. Comparing Predictive Accuracy. J Bus Econ Stat. 1995. doi:10.1080/07350015.1995.10524599 [DieboldMariano1995]
+26. Harvey D, Leybourne S, Newbold P. Testing the equality of prediction mean squared errors. Int J Forecasting. 1997. doi:10.1016/S0169-2070(96)00719-4 [HarveyLeybourneNewbold1997]
+27. Kunsch HR. The Jackknife and the Bootstrap for General Stationary Observations. Ann Stat. 1989. doi:10.1214/aos/1176347265 [Kunsch1989]
+28. Holm S. A simple sequentially rejective multiple test procedure. Scand J Stat. 1979;6(2):65-70. [Holm1979]
+29. Aksu T et al. GIFT-Eval: A Benchmark For General Time Series Forecasting Model Evaluation. 2024. arXiv:2410.10393 [Aksu2024gifteval]
+30. Google Research. TimesFM 2.5 (200M) model card. Hugging Face, 2025. https://huggingface.co/google/timesfm-2.5-200m-pytorch [TimesFM25card]
 
 *Full BibTeX available in paper/refs/references.bib*
 

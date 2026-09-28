@@ -29,3 +29,5 @@ env/
 
 # CatBoost
 catboost_info/
+results/v2/cache/
+results/v2/logs/
