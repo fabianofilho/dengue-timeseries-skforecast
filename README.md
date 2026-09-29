@@ -87,7 +87,10 @@ python scripts/process_data.py --input-dir data/raw --output-dir data/processed
 make benchmark-all   # 8 cidades em paralelo, ~40 min num Apple M4; retomável via results/v2/cache
 make analysis        # métricas, ICs, testes e tabelas (paper/tables, results/v2)
 make figures         # figuras do manuscrito (paper/figures)
+make paper           # manuscrito LaTeX PLOS NTD: tabelas, números verificados, .tex único, PDFs e TIFFs (paper/plos)
 ```
+
+O texto do manuscrito é editado em `paper/plos/manuscript_src.tex`, sem números digitados: cada valor entra como `\V{chave}` e sai de `paper/plos/verified_numbers.json`. O arquivo de submissão (`paper/plos/manuscript.tex`) é gerado. O que vai em cada campo do Editorial Manager está em `paper/plos/submission_fields.md`.
 
 Os modelos rodam com 1 thread cada (`DENGUE_N_JOBS`, padrão 1): no macOS ARM o XGBoost multithread trava depois que LightGBM e torch carregam outro `libomp`.
 

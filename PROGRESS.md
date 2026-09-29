@@ -1,6 +1,6 @@
 # PROGRESS — dengue-timeseries-skforecast
 
-Atualizado em 2026-09-29.
+Atualizado em 2026-09-29 (versão LaTeX PLOS).
 
 ## Objetivo
 Paper para a PLOS NTD comparando o TimesFM 2.5 zero-shot com modelos treinados por cidade na previsão mensal de dengue em 8 capitais, com horizonte de 12 meses.
@@ -10,9 +10,11 @@ Paper para a PLOS NTD comparando o TimesFM 2.5 zero-shot com modelos treinados p
 - Conclusão v2: o TimesFM é comparável, não superior (sMAPE médio 75,3% vs CatBoost-log 71,8%); só 1 de 56 comparações é significativa após Holm; falha em Belo Horizonte; em 12 meses nenhum modelo vence o seasonal naive.
 - Manuscrito (`paper/manuscript.md`) reenquadrado; todo número sai de `scripts/analyze_results.py`.
 
+- Manuscrito no template LaTeX da PLOS NTD em `paper/plos/` (`make paper`), com PDF, S1 Appendix e Fig1-4.tif prontos.
+
 ## Próximos passos
-1. Definir coautores (hoje o autor é único) e confirmar a afiliação
-2. Converter para o template da PLOS NTD e acentuar nomes próprios (São Paulo, Brasília)
+1. Definir coautores (hoje o autor é único) e preencher o Funding Statement (`paper/plos/submission_fields.md`)
+2. Conferir na fonte o número de 6 milhões de casos em 2024 (Gurgel-Gonçalves 2024)
 3. Opcional: avaliar os quantis do TimesFM (WIS) e covariáveis climáticas (Mosqlimate)
 4. Opcional: testar Chronos e Moirai
 

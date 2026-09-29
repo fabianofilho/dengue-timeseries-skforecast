@@ -1,0 +1,26 @@
+% gerado por scripts/build_paper_assets.py -- nao editar a mao
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{sMAPE (\%) by model and city, 12-month rolling-origin evaluation (121 origins, January 2014 to January 2024).}}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+City & TimesFM & CatBoost & XGBoost & RF & LightGBM & SARIMA & Prophet & Naive \\
+\midrule
+S\~ao Paulo & 78.0 & \textbf{75.6} & 81.2 & 77.0 & 88.9 & 87.8 & 77.3 & 77.6 \\
+Rio de Janeiro & 96.8 & 97.5 & 101.5 & \textbf{93.5} & 101.2 & 101.7 & 109.6 & 104.1 \\
+Belo Horizonte & 97.1 & \textbf{62.0} & 76.4 & 70.3 & 92.1 & 95.8 & 80.7 & 79.6 \\
+Bras\'ilia & 74.3 & 76.6 & 90.3 & 81.5 & 84.2 & 80.2 & 79.3 & \textbf{74.2} \\
+Fortaleza & \textbf{64.2} & 69.4 & 79.7 & 68.4 & 73.7 & 73.4 & 69.7 & 69.6 \\
+Recife & 67.3 & \textbf{65.9} & 73.4 & 71.0 & 77.5 & 87.1 & 81.5 & 83.3 \\
+Manaus & 56.0 & 55.7 & 54.8 & 53.9 & 62.8 & 62.4 & \textbf{53.8} & 59.1 \\
+Salvador & \textbf{68.9} & 71.8 & 72.2 & 71.0 & 72.3 & 79.5 & 88.9 & 87.2 \\
+\midrule
+Mean & 75.3 & 71.8 & 78.7 & 73.3 & 81.6 & 83.5 & 80.1 & 79.3 \\
+\bottomrule
+\end{tabular}
+\begin{flushleft} Trained models were fitted on log1p-transformed counts; TimesFM was used zero-shot on raw counts. RF, Random Forest; Naive, seasonal naive. Bold, lowest value in the row. 95\% intervals are given in S1 Appendix, Table A.
+\end{flushleft}
+\label{table2}
+\end{table}

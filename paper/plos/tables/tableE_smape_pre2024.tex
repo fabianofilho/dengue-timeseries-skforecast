@@ -1,0 +1,26 @@
+% gerado por scripts/build_paper_assets.py -- nao editar a mao
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{sMAPE (\%) for the 109 origins whose forecast windows ended by December 2023 (sensitivity analysis).}}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+City & TimesFM & CatBoost & XGBoost & RF & LightGBM & SARIMA & Prophet & Naive \\
+\midrule
+S\~ao Paulo & 71.7 & \textbf{69.4} & 75.5 & 71.5 & 87.9 & 86.3 & 70.6 & 72.7 \\
+Rio de Janeiro & 96.0 & 95.9 & 101.3 & \textbf{91.2} & 101.3 & 102.8 & 103.0 & 102.8 \\
+Belo Horizonte & 95.5 & \textbf{57.1} & 72.7 & 66.5 & 89.7 & 97.1 & 76.0 & 77.7 \\
+Bras\'ilia & \textbf{72.4} & 75.4 & 88.8 & 80.2 & 82.7 & 78.9 & 79.3 & 72.6 \\
+Fortaleza & \textbf{66.5} & 71.9 & 79.7 & 68.3 & 74.7 & 74.2 & 71.8 & 71.9 \\
+Recife & 66.7 & \textbf{65.3} & 72.4 & 69.8 & 77.0 & 86.6 & 82.7 & 84.0 \\
+Manaus & 54.1 & 54.7 & 53.0 & 51.9 & 62.0 & 59.8 & \textbf{49.8} & 56.6 \\
+Salvador & \textbf{69.5} & 70.8 & 71.3 & 72.1 & 72.1 & 78.8 & 84.9 & 87.4 \\
+\midrule
+Mean & 74.0 & 70.1 & 76.8 & 71.5 & 80.9 & 83.1 & 77.3 & 78.2 \\
+\bottomrule
+\end{tabular}
+\begin{flushleft} Trained models were fitted on log1p-transformed counts; TimesFM was used zero-shot on raw counts. RF, Random Forest; Naive, seasonal naive. Bold, lowest value in the row.
+\end{flushleft}
+\label{tabE}
+\end{table}

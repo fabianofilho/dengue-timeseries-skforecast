@@ -1,3 +1,5 @@
+> **Versão de trabalho em Markdown, congelada em 2026-09-29.** A versão de submissão é `paper/plos/manuscript_src.tex` (template PLOS NTD), gerada com `make paper`. Edite o `.tex`, não este arquivo.
+
 # A Zero-Shot Foundation Model Versus City-Trained Models for 12-Month Dengue Forecasting in Eight Brazilian State Capitals: A Rolling-Origin Benchmark
 
 **Running title:** Zero-shot versus trained models for dengue forecasting in Brazil

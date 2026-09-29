@@ -31,3 +31,4 @@ env/
 catboost_info/
 results/v2/cache/
 results/v2/logs/
+# paper/plos/build/ fica ignorado por build/ acima; os 2 PDFs de submissão foram adicionados com git add -f

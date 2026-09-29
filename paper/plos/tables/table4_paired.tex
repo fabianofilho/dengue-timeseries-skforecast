@@ -1,0 +1,24 @@
+% gerado por scripts/build_paper_assets.py -- nao editar a mao
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{Difference in sMAPE between TimesFM and the two leading trained models and the seasonal naive benchmark.}}
+\begin{tabular}{lrrr}
+\toprule
+City & vs CatBoost & vs RF & vs Naive \\
+\midrule
+S\~ao Paulo & +2.4 ($-$10.2 to 17.5) & +1.0 ($-$11.3 to 15.7) & +0.4 ($-$14.9 to 13.6) \\
+Rio de Janeiro & $-$0.7 ($-$14.4 to 15.2) & +3.3 ($-$7.4 to 16.5) & $-$7.3 ($-$21.0 to 5.1) \\
+Belo Horizonte & +35.1 (19.9 to 56.9) & +26.8 (11.6 to 48.4) & +17.5 (2.6 to 36.0) \\
+Bras\'ilia & $-$2.4 ($-$10.9 to 8.7) & $-$7.3 ($-$16.3 to 3.3) & +0.1 ($-$8.5 to 10.6) \\
+Fortaleza & $-$5.2 ($-$16.5 to 5.1) & $-$4.2 ($-$16.4 to 7.2) & $-$5.4 ($-$18.0 to 5.7) \\
+Recife & +1.4 ($-$8.7 to 13.9) & $-$3.8 ($-$11.9 to 5.6) & $-$16.1 ($-$28.5 to $-$6.8) \\
+Manaus & +0.3 ($-$4.9 to 4.6) & +2.2 ($-$2.5 to 6.9) & $-$3.0 ($-$14.5 to 6.5) \\
+Salvador & $-$3.0 ($-$11.7 to 9.3) & $-$2.1 ($-$9.9 to 7.4) & $-$18.3 ($-$32.6 to $-$3.2) \\
+\bottomrule
+\end{tabular}
+\begin{flushleft} Values are TimesFM minus comparator sMAPE in percentage points (negative favors TimesFM), with 95\% paired moving block bootstrap intervals over forecast origins. Bold, Diebold-Mariano test significant after Holm correction across all 56 comparisons (none in this table). All comparators are shown in S1 Appendix, Table F.
+\end{flushleft}
+\label{table4}
+\end{table}
