@@ -2,7 +2,7 @@ PYTHON ?= /opt/miniconda3/envs/dsc/bin/python
 UV ?= $(HOME)/.local/bin/uv
 JOBS ?= 8
 
-.PHONY: setup fetch-data process-data benchmark-all benchmark-sp analysis figures
+.PHONY: setup fetch-data process-data benchmark-all benchmark-sp analysis figures paper
 
 setup:
 	$(UV) pip install --python $(PYTHON) -r requirements.txt
@@ -35,3 +35,7 @@ analysis:
 
 figures:
 	$(PYTHON) scripts/generate_paper_figures.py --results-dir results/v2 --out-dir paper/figures
+
+# Manuscrito LaTeX no template PLOS NTD (tabelas, números verificados, .tex único e PDFs)
+paper: analysis figures
+	$(PYTHON) scripts/build_paper_assets.py

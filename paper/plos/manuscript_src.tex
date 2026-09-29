@@ -1,0 +1,289 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+
+% amsmath and amssymb packages, useful for mathematical formulas and symbols
+\usepackage{amsmath,amssymb}
+
+% Use adjustwidth environment to exceed column width (see example table in text)
+\usepackage{changepage}
+
+% textcomp package and marvosym package for additional characters
+\usepackage{textcomp,marvosym}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+% Use nameref to cite supporting information files (see Supporting Information section for more info)
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% ligatures disabled
+\usepackage[nopatch=eqnum]{microtype}
+% \DisableLigatures so existe no pdfTeX (motor da PLOS); no XeTeX/tectonic local e pulado
+\usepackage{iftex}
+\ifPDFTeX
+\DisableLigatures[f]{encoding = *, family = * }
+\fi
+
+% color can be used to apply background shading to table cells only
+\usepackage[table]{xcolor}
+
+% array package and thick rules for tables
+\usepackage{array}
+
+% create "+" rule type for thick vertical lines
+\newcolumntype{+}{!{\vrule width 2pt}}
+
+% create \thickcline for thick horizontal lines of variable length
+\newlength\savedwidth
+\newcommand\thickcline[1]{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \cline{#1}%
+  \noalign{\vskip\arrayrulewidth}%
+  \noalign{\global\arrayrulewidth\savedwidth}%
+}
+
+% \thickhline command for thick horizontal lines that span the table
+\newcommand\thickhline{\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+\hline
+\noalign{\global\arrayrulewidth\savedwidth}}
+
+
+% Remove comment for double spacing
+%\usepackage{setspace} 
+%\doublespacing
+
+% Text layout
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in
+\textheight 8.75in
+
+% Bold the 'Figure #' in the caption and separate it from the title/caption with a period
+% Captions will be left justified
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off]{caption}
+\renewcommand{\figurename}{Fig}
+
+% Please use the included `plos2025.bst` as your BibTeX style
+\bibliographystyle{plos2025}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+
+
+% Header and Footer with logo
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+%\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+%\setlength{\headheight}{27.023pt}
+%\lhead{\includegraphics[width=2.0in]{PLOS-submission.eps}}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\today}
+
+%% Include all user-defined macros below
+
+% booktabs: regras de tabela sem linhas verticais (pacote adicional; o template permite)
+\usepackage{booktabs}
+
+%% END MACROS SECTION
+
+
+\begin{document}
+\vspace*{0.2in}
+
+\begin{flushleft}
+{\Large
+\textbf{A zero-shot foundation model versus city-trained models for 12-month dengue forecasting in eight Brazilian state capitals: A rolling-origin benchmark}
+}
+\newline
+\\
+Fabiano Novaes Barcellos Filho\textsuperscript{1*}
+\\
+\bigskip
+\textbf{1} Laborat\'orio de Big Data e An\'alise Preditiva em Sa\'ude (LABDAPS), Faculdade de Sa\'ude P\'ublica, Universidade de S\~ao Paulo, S\~ao Paulo, SP, Brazil
+\\
+\bigskip
+
+* fabiano.nb@gmail.com
+
+\end{flushleft}
+
+\section*{Abstract}
+\subsection*{Background}
+Time-series foundation models forecast a new series without being trained on it, which would spare surveillance teams from maintaining one model per municipality. Whether they forecast dengue as well as models trained on each city's history remains unclear.
+
+\subsection*{Methodology}
+We compared TimesFM 2.5, used zero-shot, with a seasonal naive benchmark, SARIMA, Prophet, and four tree ensembles (CatBoost, XGBoost, Random Forest, LightGBM) fitted on log-transformed counts, using monthly notified dengue cases from eight Brazilian state capitals (January 2010 to December 2024, InfoDengue). A rolling-origin design produced \V{n-origins} origins per city with a 12-month horizon. The primary metric was sMAPE; MASE was secondary. Uncertainty was quantified with a moving block bootstrap over origins and Diebold-Mariano tests with Holm correction.
+
+\subsection*{Findings}
+Mean sMAPE across cities was \V{smape-mean.catboost_log}\% for CatBoost, \V{smape-mean.randomforest_log}\% for Random Forest, \V{smape-mean.timesfm}\% for TimesFM, and \V{smape-mean.seasonal_naive}\% for the seasonal naive forecast. TimesFM had the lowest sMAPE in \V{first-smape.timesfm} of 8 cities and the lowest MASE in \V{first-mase.timesfm} of 8. Only \V{n-sig-holm} of \V{n-tests} paired comparisons with TimesFM remained significant after Holm correction. TimesFM was the least accurate model in Belo Horizonte (sMAPE \V{bh-smape.timesfm}\% vs \V{bh-smape.catboost_log}\% for CatBoost; difference \V{bh-diff} points, 95\% CI \V{bh-ci}). TimesFM was most accurate one month ahead, while at 12 months no model beat the seasonal naive forecast. Fitting the trained models on raw counts instead, a handicap for tree ensembles, made TimesFM appear superior.
+
+\subsection*{Conclusion}
+Without city-specific training, TimesFM forecast monthly dengue cases about as accurately as the best city-trained models, but it was not reliably better and it failed in one city. Such comparisons need a seasonal naive benchmark, fairly scaled baselines, and uncertainty estimates that account for overlapping forecast windows.
+
+\section*{Author summary}
+Health authorities in Brazil plan dengue control, hospital beds, and supply purchases months ahead, and forecasts of case counts can support that planning. Building a separate forecasting model for each city takes time and expertise. New ``foundation'' forecasting models, trained by technology companies on millions of unrelated time series, can produce a forecast for any series without further training. We tested whether one of them, TimesFM, forecasts monthly dengue cases in eight Brazilian capitals as well as conventional models fitted to each city's data. Over forecasts made from 2014 to 2024 as if in real time, TimesFM was about as accurate as the best conventional models, with no clear winner, and it performed poorly in Belo Horizonte. A simple rule that repeats last year's count for the same month was hard to beat at 12 months ahead. We also show that fitting the conventional models on untransformed counts makes the foundation model look better than it is. Foundation models are a reasonable low-maintenance option for dengue forecasting, but they should be checked city by city and compared against simple benchmarks before use.
+
+\clearpage
+\newgeometry{top=0.85in,left=1in,right=1in,footskip=0.75in}
+\linenumbers
+
+\section*{Introduction}
+Dengue is the most common arboviral infection worldwide, with an estimated 390 million infections per year~\cite{Bhatt2013}. Brazil carries a large share of this burden: in 2024 it reported more than 6 million probable cases, the highest annual count on record, with outbreaks in all five macroregions~\cite{GurgelGoncalves2024}. The costs include medical care, lost productivity, and deaths~\cite{Siqueira2022}.
+
+Forecasts of dengue cases months ahead can help health authorities position supplies, schedule vector control, and plan hospital capacity before peaks~\cite{Roster2022}. In Brazil, the InfoDengue system (Fiocruz/FGV) publishes surveillance data for every municipality and has supported several forecasting studies~\cite{Codeco2018infodengue}. Most published approaches, however, rely on models fitted separately for each location, from ARIMA-family models to tree ensembles and neural networks, which must be refitted and monitored as local dynamics change~\cite{Leung2023,Roster2022,Chen2025lstm}.
+
+Time-series foundation models offer another route. They are pre-trained on large and heterogeneous collections of time series and can forecast a new series directly from its history, with no fitting~\cite{Das2024timesfm,Ansari2024chronos,Woo2024moirai}. TimesFM, a decoder-only transformer from Google Research, performed competitively with supervised baselines on public benchmarks in zero-shot mode~\cite{Das2024timesfm}, and its 2.5 checkpoint was released in 2025~\cite{TimesFM25card}. If such a model forecast dengue as well as city-specific models, a national surveillance platform could cover every municipality with a single model.
+
+Benchmarks of this question are easy to tilt, though. A foundation model applies its own normalization, while trained baselines may be fitted on raw counts, a setting in which tree ensembles cannot forecast above the largest value seen in training. Comparisons may also omit a seasonal naive benchmark or treat forecasts from overlapping windows as independent observations, which makes confidence intervals too narrow~\cite{Hewamalage2023}.
+
+We compared TimesFM 2.5, used zero-shot, with a seasonal naive benchmark and six models fitted on each city's history for 12-month-ahead forecasting of monthly dengue cases in eight Brazilian state capitals. All trained models were fitted on log-transformed counts, and uncertainty was estimated with methods that respect the dependence between overlapping forecast windows. Our objective was to determine whether a zero-shot foundation model can match or exceed city-trained models in this setting.
+
+\section*{Materials and methods}
+This study follows the TRIPOD+AI reporting guideline~\cite{Collins2024tripod}. Code, processed data, forecasts, and all result files are available at \url{https://github.com/fabianofilho/dengue-timeseries-skforecast} (release tag \texttt{paper-v2}).
+
+\subsection*{Ethics statement}
+This study used only publicly available, anonymized, aggregate surveillance counts. No individual-level records were accessed, and no ethics committee review was required.
+
+\subsection*{Data source and study population}
+We used dengue case counts from InfoDengue, a surveillance platform maintained by Funda\c{c}\~ao Oswaldo Cruz (Fiocruz) and Funda\c{c}\~ao Getulio Vargas (FGV) that aggregates mandatory notifications from Brazil's national notifiable diseases information system (SINAN)~\cite{Codeco2018infodengue}. Data were obtained through the InfoDengue public API for eight state capitals covering the five geographic macroregions of Brazil: S\~ao Paulo, Rio de Janeiro, Belo Horizonte, Bras\'ilia, Fortaleza, Recife, Manaus, and Salvador.
+
+The API returns weekly counts by epidemiological week. We used the notified case count (\texttt{casos}) rather than the nowcast estimate (\texttt{casos\_est}). These are the consolidated counts available when the data were downloaded (March 2026), not the provisional counts that would have been available at each forecast origin (see Limitations). Weekly counts were summed into calendar months, assigning each epidemiological week to the month in which it starts. The API returned \V{n-weeks} consecutive weeks per city, from the week starting 3 January 2010 to the week starting 22 December 2024, so December 2024 lacks the epidemiological week starting on 29 December. The study period spanned January 2010 to December 2024 (\V{n-months} months per city). No week was missing within this range and no month had zero notified cases, so no imputation was needed.
+
+\subsection*{Outcome}
+The outcome was the total number of notified dengue cases per city per calendar month. Because dengue counts vary over three orders of magnitude between inter-epidemic troughs and epidemic peaks, all trained models (SARIMA, Prophet, and the four tree ensembles) were fitted on $\log(1+y)$ and their forecasts back-transformed with $\exp(\hat{z})-1$. This choice was fixed before the analysis reported here was run. Tree ensembles fitted on the raw scale cannot predict values above the maximum seen in training, which disadvantages them in record epidemic years such as 2024; the raw-scale versions are reported as a sensitivity analysis. TimesFM received the raw series, which is its intended input, since it applies its own internal normalization. Negative forecasts were clipped to zero.
+
+\subsection*{Forecasting models}
+Eight models formed the primary comparison set.
+
+\textbf{Seasonal naive.} The forecast for each month repeats the count observed in the same calendar month of the last year of the training window. It requires no fitting and is the reference that any forecasting model should beat~\cite{Hewamalage2023}.
+
+\textbf{SARIMA.} Seasonal ARIMA with order (1,1,1) and seasonal order (1,1,0) with period 12, fitted by maximum likelihood in statsmodels. No exogenous regressors were used, and the orders were fixed across cities and origins.
+
+\textbf{Prophet.} An additive decomposition model with piecewise linear trend, yearly Fourier seasonality, and automatic changepoint detection~\cite{Taylor2018prophet}. Weekly and daily components were disabled given the monthly frequency, and default priors were used.
+
+\textbf{LightGBM, XGBoost, CatBoost, and Random Forest.} Four tree ensembles~\cite{Ke2017lightgbm,Chen2016xgboost,Prokhorenkova2018catboost,Breiman2001} were wrapped in a recursive multi-step forecaster (ForecasterRecursive, skforecast) with 24 autoregressive lags and no covariates. Library default hyperparameters were used (Random Forest with 100 trees), with a fixed random seed and a single thread per model for deterministic results. Each model was refitted at every forecast origin on all data available up to that origin.
+
+\textbf{TimesFM 2.5.} A decoder-only transformer foundation model released by Google Research in September 2025 as the checkpoint google/timesfm-2.5-200m-pytorch~\cite{Das2024timesfm,TimesFM25card}. According to its model card, it was pre-trained on the GIFT-Eval pre-training corpus~\cite{Aksu2024gifteval}, Wikimedia pageviews (to November 2023), Google Trends top queries (to the end of 2022), and synthetic data. We used it zero-shot, with no fine-tuning and no city-specific adaptation. At each origin the full available history (48 to 168 months, below the configured maximum context of 512) was passed as context, with input normalization and the positivity constraint enabled. The point forecast was used.
+
+\subsection*{Evaluation design}
+We used rolling-origin evaluation with an expanding window~\cite{Tashman2000,Hewamalage2023}. The first origin used 48 months of training data (January 2010 to December 2013), and each subsequent origin added one month. At each origin, every model produced forecasts for the next 12 months. With $T = 180$ months, a minimum training size of $m = 48$, and a horizon of $h = 12$, there were $T - m - h + 1 = \V{n-origins}$ origins per city (forecast windows starting January 2014 to January 2024), giving \V{n-forecasts} forecasts per model and city. Every model saw exactly the same training data and was scored on exactly the same target months. No information from a forecast window was used for fitting, feature construction, or model configuration at that origin~\cite{Kapoor2023}.
+
+\subsection*{Performance metrics}
+Metrics were computed by pooling all \V{n-forecasts} forecasts per model and city. The primary metric was the symmetric mean absolute percentage error,
+\begin{equation}
+\mathrm{sMAPE} = \frac{100}{n}\sum_{t=1}^{n}\frac{|y_t-\hat{y}_t|}{(|y_t|+|\hat{y}_t|)/2}.
+\end{equation}
+sMAPE is scale-free, which allows comparison across cities whose counts differ by two orders of magnitude, and it is common in the dengue forecasting literature. It is not symmetric in practice, because it penalizes under-forecasts of low counts more than over-forecasts~\cite{Hewamalage2023}. We therefore also report the mean absolute scaled error (MASE), in which each absolute error is divided by the in-sample mean absolute error of the seasonal naive forecast on the training window of the same origin~\cite{HyndmanKoehler2006}. MASE below 1 means lower error than that benchmark. The mean absolute error (MAE) and root mean squared error (RMSE), in cases per month, are reported in S1 Appendix; RMSE is dominated by the largest epidemic months.
+
+\subsection*{Statistical inference}
+The \V{n-origins} forecast origins of a city overlap, since each target month is forecast from up to 12 origins, and forecast errors are serially correlated, so the \V{n-forecasts} forecasts are not independent. Treating them as independent would produce confidence intervals that are too narrow. We therefore resampled forecast origins rather than individual forecasts, using a moving block bootstrap~\cite{Kunsch1989} with blocks of \V{block} consecutive origins and \V{n-boot} replicates, and recomputed each pooled metric in every replicate. For the difference between TimesFM and each comparator, both models were evaluated on the same resampled origins, giving a paired 95\% percentile interval.
+
+We also tested TimesFM against each comparator with the Diebold-Mariano test~\cite{DieboldMariano1995} applied to the series of \V{n-origins} origin-level losses (mean sMAPE over the 12 forecast months of each origin). The long-run variance was estimated with a Bartlett (Newey-West) kernel with 12 lags, and the statistic was multiplied by the Harvey-Leybourne-Newbold small-sample correction and compared with a $t$ distribution with 120 degrees of freedom~\cite{HarveyLeybourneNewbold1997}. P-values were adjusted with the Holm procedure across all \V{n-tests} comparisons (8 cities by 7 comparators)~\cite{Holm1979}.
+
+\subsection*{Sensitivity analyses}
+Two sensitivity analyses were pre-specified. First, all trained models were refitted on the untransformed counts, to show how the choice of scale affects the comparison. Second, because 2024 was the largest dengue epidemic on record in Brazil~\cite{GurgelGoncalves2024}, we restricted the evaluation to the \V{n-origins-pre2024} origins whose 12-month forecast window ended by December 2023.
+
+\subsection*{Software and reproducibility}
+Analyses ran in Python 3.10.18 with pandas 2.3.1, numpy 2.0.2, scikit-learn 1.6.1, skforecast 0.20.1, statsmodels 0.14.4, prophet 1.3.0, lightgbm 4.6.0, xgboost 3.0.2, catboost 1.2.8, scipy 1.15.3, torch 2.8.0, and the timesfm package 2.0.0, on an Apple M4 CPU. Every number in the tables and text is produced by scripts in the repository from the saved forecasts, and the full pipeline runs with \texttt{make benchmark-all analysis figures}.
+
+\section*{Results}
+\subsection*{Dengue series}
+Table~\ref{table1} summarizes the eight series. Mean monthly counts ranged from \V{mean-min} in \V{mean-min-city} to \V{mean-max} in \V{mean-max-city}, and every series was strongly right-skewed: the mean exceeded the median in all cities, and the coefficient of variation ranged from \V{cv-min}\% to \V{cv-max}\%. The largest monthly count, \V{max-count} cases in \V{max-count-city}, occurred during the \V{max-count-year} epidemic. Fig~\ref{fig1} shows the series on a log scale.
+
+\input{tables/table1_descriptives}
+
+\begin{figure}[!h]
+\caption{\textbf{Monthly notified dengue cases in eight Brazilian state capitals, January 2010 to December 2024.}
+Log scale. The shaded area marks the months covered by forecast windows (January 2014 to December 2024).}
+\label{fig1}
+\end{figure}
+
+\subsection*{Primary comparison}
+Table~\ref{table2} shows sMAPE for the eight models of the primary set; 95\% intervals are in S1 Appendix, Table A. Averaged across cities, the ranking was \V{order-primary}. The best model differed by city: CatBoost ranked first in \V{first-smape.catboost-word} cities (\V{first-smape.catboost-cities}), TimesFM in \V{first-smape.timesfm-word} (\V{first-smape.timesfm-cities}), and \V{first-smape.others} in one each. TimesFM ranked \V{timesfm-rank-text}.
+
+\input{tables/table2_smape}
+
+The confidence intervals were wide and overlapped for most models within each city. In S\~ao Paulo, for example, sMAPE was \V{sp-smape.catboost_log}\% (95\% CI \V{sp-smape-ci.catboost_log}) for CatBoost and \V{sp-smape.timesfm}\% (\V{sp-smape-ci.timesfm}) for TimesFM.
+
+By MASE (Table~\ref{table3}), TimesFM had the lowest error in \V{first-mase.timesfm-word} of eight cities and the lowest mean across cities (\V{mase-mean.timesfm}, vs \V{mase-mean.catboost_log} for CatBoost and \V{mase-mean.randomforest_log} for Random Forest), although the differences between the leading models were small. MASE exceeded 1 for every model in \V{mase-above1-cities}, largely because the in-sample seasonal naive error used for scaling was small relative to the errors during the 2024 epidemic (see Sensitivity analyses). The seasonal naive forecast itself had a mean MASE of \V{mase-mean.seasonal_naive}. TimesFM also had the lowest MAE in \V{mae-first.timesfm-word} cities (\V{mae-first.others}; S1 Appendix, Tables B and C).
+
+\input{tables/table3_mase}
+
+\subsection*{Paired comparisons with TimesFM}
+Table~\ref{table4}, Fig~\ref{fig2}, and S1 Appendix, Table F show the paired difference in sMAPE between TimesFM and each comparator. Of the \V{n-tests} comparisons, \V{n-ci-excl0} had a 95\% bootstrap interval that excluded zero. \V{n-fav-timesfm-word} favored TimesFM (against \V{fav-timesfm-list}), and \V{n-fav-comp-word} favored the comparator, all in \V{fav-comp-cities}. After Holm correction of the Diebold-Mariano tests, a single comparison remained significant: TimesFM was more accurate than \V{sig-comp} in \V{sig-city} (difference \V{sig-diff} points, 95\% CI \V{sig-ci}). Against CatBoost, the model with the lowest mean sMAPE, the difference ranged from \V{cb-diff-min} points in \V{cb-diff-min-city} to \V{cb-diff-max} points in \V{cb-diff-max-city} in the other \V{cb-n-others-word} cities, with every interval including zero. In Belo Horizonte, TimesFM was \V{bh-diff} points worse (95\% CI \V{bh-ci}; Holm-adjusted $p = \V{bh-p-holm}$).
+
+\input{tables/table4_paired}
+
+\begin{figure}[!h]
+\caption{\textbf{Paired difference in sMAPE between TimesFM and each comparator, by city.}
+Negative values favor TimesFM. Points are point estimates; bars are 95\% paired moving block bootstrap intervals over forecast origins. Filled points indicate Diebold-Mariano tests significant at 0.05 after Holm correction across the \V{n-tests} comparisons.}
+\label{fig2}
+\end{figure}
+
+\subsection*{Error by forecast horizon}
+Error rose with the horizon for all trained models and for TimesFM (Fig~\ref{fig3}). One month ahead, TimesFM had the lowest median sMAPE across cities (\V{h1.timesfm}\%, vs \V{h1.catboost_log}\% for CatBoost, \V{h1.randomforest_log}\% for Random Forest, and \V{h1.seasonal_naive}\% for the seasonal naive forecast). The advantage disappeared by six months (\V{h6.timesfm}\% for TimesFM vs \V{h6.catboost_log}\% for CatBoost). At 12 months, the seasonal naive forecast had the lowest median sMAPE (\V{h12.seasonal_naive}\%), below CatBoost (\V{h12.catboost_log}\%), TimesFM (\V{h12.timesfm}\%), and Random Forest (\V{h12.randomforest_log}\%).
+
+\begin{figure}[!h]
+\caption{\textbf{sMAPE by forecast horizon.}
+Median across the eight cities of the sMAPE at each horizon from 1 to 12 months, primary model set. TimesFM, CatBoost, and the seasonal naive forecast are highlighted; the other models are shown in gray.}
+\label{fig3}
+\end{figure}
+
+Fig~\ref{fig4} summarizes sMAPE for every model and city.
+
+\begin{figure}[!h]
+\caption{\textbf{sMAPE by model and city, primary model set.}
+Darker cells indicate higher error; the lowest value in each city is in bold.}
+\label{fig4}
+\end{figure}
+
+\subsection*{Sensitivity analyses}
+When the trained models were fitted on raw counts (S1 Appendix, Table D), their mean sMAPE rose to between \V{raw-mean-min}\% (\V{raw-mean-min-model}) and \V{raw-mean-max}\% (\V{raw-mean-max-model}), and the tree ensembles did worse than the seasonal naive forecast in \V{raw-trees-worse-naive} of eight cities. In that configuration TimesFM ranked first in \V{raw-first.timesfm} cities and the seasonal naive forecast in the other \V{raw-first.naive}, and no trained model ranked first anywhere. As a reproducibility check, these raw-scale results matched an independent earlier run of the same pipeline (files in the \texttt{results} folder of the repository) to within \V{repro-max} sMAPE points for \V{repro-max-model} in \V{repro-max-city} and within \V{repro-rest} points for every other model.
+
+Restricting the evaluation to the \V{n-origins-pre2024} origins whose forecast windows ended by December 2023, before the 2024 epidemic (S1 Appendix, Table E), left the four leading models in the same order: mean sMAPE was \V{pre-mean.catboost_log}\% for CatBoost, \V{pre-mean.randomforest_log}\% for Random Forest, \V{pre-mean.timesfm}\% for TimesFM, and \V{pre-mean.seasonal_naive}\% for the seasonal naive forecast. TimesFM remained the least accurate model in Belo Horizonte, where its difference from CatBoost was the only comparison favoring a comparator that survived Holm correction (\V{pre-bh-diff} points, 95\% CI \V{pre-bh-ci}). Mean MASE fell below 1 for all models except SARIMA, indicating that the high MASE values in the full analysis were driven by 2024.
+
+\section*{Discussion}
+\subsection*{Main findings}
+Used without any training on dengue data, TimesFM 2.5 forecast monthly dengue cases in eight Brazilian capitals about as well as tree ensembles fitted to each city's history. It had the lowest scaled error (MASE) in \V{first-mase.timesfm-word} cities and the lowest error one month ahead, but its mean sMAPE was slightly higher than that of CatBoost and Random Forest, and almost none of the differences between the leading models could be distinguished from sampling variability. It also failed badly in Belo Horizonte. The most accurate description of the evidence is that the zero-shot model was comparable to, not better than, the best city-trained models. Because the study was not designed with an equivalence margin, the wide intervals do not establish equivalence either.
+
+\subsection*{How a benchmark can overstate a foundation model}
+Our sensitivity analyses show how easily this comparison can be tilted in favor of the foundation model. Had we fitted the trained models on raw counts and omitted the seasonal naive benchmark, TimesFM would have ranked first in \V{raw-no-naive-first.timesfm} of eight cities (S1 Appendix, Table D). Three design choices prevent this. First, fitting the trained models on log-transformed counts, which suits counts spanning three orders of magnitude, improved their mean sMAPE by about \V{impr.catboost} points for CatBoost, \V{impr.randomforest} for Random Forest, and \V{impr.stat-min} to \V{impr.stat-max} for SARIMA and Prophet. Tree ensembles fitted on raw counts cannot forecast above the largest value in their training data, which handicaps them in epidemic years. Second, the seasonal naive benchmark revealed that the raw-scale tree ensembles were worse than repeating last year's counts in \V{raw-trees-worse-naive} of eight cities, a failure that a comparison among trained models alone would not show. Third, resampling forecast origins in blocks, rather than treating the \V{n-forecasts} overlapping forecasts as independent, produced confidence intervals \V{ciw-min} to \V{ciw-max} times wider than a naive bootstrap over individual forecasts (median \V{ciw-med}), and those naive intervals would have made small differences look reliable. Each of these is a known pitfall in forecast evaluation~\cite{Hewamalage2023}. We suggest that comparisons of foundation models in epidemiology report a seasonal naive benchmark, give trained baselines a scale treatment comparable to the normalization the foundation model applies internally, and use uncertainty estimates that account for overlapping forecast windows.
+
+\subsection*{Belo Horizonte}
+TimesFM's failure in Belo Horizonte was consistent across the full and pre-2024 analyses. The city's series alternates large epidemic years with low-incidence years (Fig~\ref{fig1}), and the tree ensembles, which learn from lagged values of the same city, captured this pattern better than a model relying only on general patterns learned elsewhere. We could not determine why TimesFM underperformed there, and eight cities are too few to identify which series characteristics predict failure. The practical point is that a zero-shot model's accuracy should be checked for each location before it replaces a locally validated model.
+
+\subsection*{Implications for dengue surveillance}
+The main operational appeal of a foundation model is that it needs no fitting, tuning, or retraining. Our results suggest that this convenience comes at little cost in average accuracy for monthly dengue counts in large Brazilian cities, and that TimesFM is a reasonable default for short-range forecasts, where it performed best. At 12 months, however, no method beat the seasonal naive forecast, which implies that year-ahead point forecasts of monthly counts carry little information beyond the seasonal pattern. For annual planning, probabilistic forecasts and scenario ranges are likely more useful than point forecasts, and forecasts with climate covariates may add information that univariate models cannot~\cite{Barcellos2024,Fang2024}.
+
+\subsection*{Limitations}
+This study has several limitations. First, we forecast notified cases, which reflect reporting and testing practices as well as transmission and underestimate the number of infections~\cite{Bhatt2013}. We also used consolidated counts rather than the provisional counts available in real time; because recent weeks are revised upward as late notifications arrive, all models would face larger errors in operational use, and nowcasting would be needed before forecasting~\cite{Codeco2018infodengue}. Second, weekly counts were assigned to calendar months by the start date of each epidemiological week, which adds noise to monthly totals. Third, no model used climate or other covariates, and trained models used fixed, untuned hyperparameters; tuned or covariate-augmented models might outperform all models evaluated here. Fourth, we evaluated one foundation model checkpoint and only its point forecasts; other foundation models~\cite{Ansari2024chronos,Woo2024moirai}, fine-tuning, and TimesFM's quantile forecasts were not assessed. Fifth, TimesFM's pre-training corpus includes epidemiological series from the United States (CDC influenza-like illness and Project Tycho notifiable diseases)~\cite{Aksu2024gifteval} and Wikipedia and Google Trends series that overlap our evaluation period in time~\cite{TimesFM25card}. We found no InfoDengue or Brazilian dengue series in the documented corpus, so direct leakage is unlikely, but indirect information cannot be ruled out. Sixth, sMAPE penalizes under-forecasts of small counts more than over-forecasts; we therefore also report MASE, whose conclusions agreed in direction. Finally, the analysis covered eight large capitals, and results may differ for smaller municipalities with sparse counts.
+
+\section*{Conclusion}
+A zero-shot foundation model forecast monthly dengue cases in eight Brazilian capitals about as accurately as the best models trained on each city, without any local fitting, but it was not reliably better and it failed in one city. At a 12-month horizon, no model outperformed repeating last year's counts. Foundation models are a reasonable low-maintenance option for dengue surveillance, provided they are validated locally and compared against simple benchmarks and fairly configured trained models.
+
+\section*{Supporting information}
+
+\paragraph*{S1 Appendix.}
+\label{S1_Appendix}
+\textbf{Supplementary tables.} Table A, sMAPE with 95\% moving block bootstrap intervals; Table B, MAE; Table C, RMSE; Table D, sMAPE with all trained models fitted on untransformed counts; Table E, sMAPE for forecast windows ending by December 2023; Table F, paired sMAPE differences and Diebold-Mariano tests for all \V{n-tests} comparisons.
+
+\section*{Acknowledgments}
+Surveillance data were obtained from the InfoDengue platform (Fiocruz/FGV). TimesFM was developed by Google Research and is distributed through Hugging Face. Claude (Anthropic), an AI assistant, was used to help write analysis code and draft and edit the manuscript text; the author reviewed all code, results, and text and takes full responsibility for the content.
+
+\nolinenumbers
+
+\bibliography{references}
+
+\end{document}

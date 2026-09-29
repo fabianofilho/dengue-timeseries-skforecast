@@ -1,0 +1,33 @@
+% S1 Appendix: tabelas suplementares. As tabelas sao geradas por scripts/build_paper_assets.py.
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{booktabs,longtable,pdflscape,caption,xurl}
+\usepackage{amsmath}
+\captionsetup{labelfont=bf,labelsep=period,justification=raggedright,singlelinecheck=off}
+\renewcommand{\thetable}{\Alph{table}}
+\begin{document}
+\raggedright
+{\large \textbf{S1 Appendix. Supplementary tables}}
+
+\medskip
+A zero-shot foundation model versus city-trained models for 12-month dengue forecasting in eight Brazilian state capitals: A rolling-origin benchmark. Fabiano Novaes Barcellos Filho.
+
+\medskip
+All tables are generated from the saved forecasts by \texttt{scripts/analyze\_results.py} and \texttt{scripts/build\_paper\_assets.py} (\url{https://github.com/fabianofilho/dengue-timeseries-skforecast}, tag \texttt{paper-v2}). sMAPE, symmetric mean absolute percentage error; MAE, mean absolute error; RMSE, root mean squared error. Evaluation: expanding-window rolling origin, 121 origins per city (forecast windows starting January 2014 to January 2024), 12-month horizon.
+
+\begin{landscape}
+\input{tables/tableA_smape_ci}
+\end{landscape}
+
+\input{tables/tableB_mae}
+
+\input{tables/tableC_rmse}
+
+\input{tables/tableD_smape_raw}
+
+\input{tables/tableE_smape_pre2024}
+
+\clearpage
+\input{tables/tableF_dm}
+
+\end{document}

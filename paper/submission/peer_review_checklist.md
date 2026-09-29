@@ -40,10 +40,22 @@ Com baselines justos (log1p) e inferência por block bootstrap, o TimesFM é com
 - [x] Contaminação do pré-treino do TimesFM discutida (GIFT-Eval tem CDC FluView e Project Tycho, sem InfoDengue; Wikipedia/Trends sobrepõem o período)
 - [x] Dados consolidados (não vintages em tempo real) declarados como limitação
 
+## Versão LaTeX PLOS NTD (2026-09-29)
+
+- [x] Template oficial PLOS (v3.8, abr/2026) com `plos2025.bst`; `.tex` único sem `\input`, bibliografia embutida
+- [x] Todo número do texto via `\V{}` a partir de `paper/plos/verified_numbers.json` (109 valores); chave ausente interrompe o build
+- [x] Abstract estruturado NTD (275 palavras), author summary (182), título com 149 caracteres
+- [x] 28 referências conferidas no Crossref (DOI) e no arXiv; `.bib` gerado a partir dos metadados oficiais
+- [x] Figuras em TIFF RGB/LZW 300 dpi dentro dos limites da PLOS (Arial, <= 2250 x 2625 px), fora do PDF
+- [x] Declaração de uso de IA nos Acknowledgments
+- [x] Compilado (tectonic) e lido: 12 páginas + S1 Appendix (6), 0 overfull, 0 referências indefinidas
+
 ## Pendências antes da submissão
 
-1. Nome e afiliação confirmados: Fabiano Novaes Barcellos Filho, LABDAPS/FSP/USP (a v1 tinha "Bozza" por erro)
+1. [feito] Nome e afiliação confirmados: Fabiano Novaes Barcellos Filho, LABDAPS/FSP/USP (a v1 tinha "Bozza" por erro)
 2. Coautores? A cover letter e o manuscrito estão com autor único
-3. Criar a tag `paper-v2` após o merge
+3. [feito] Tag `paper-v2`
 4. Opcional: avaliar os quantis do TimesFM (WIS) e um modelo com covariáveis climáticas (Mosqlimate)
-5. Opcional: converter para o template da PLOS NTD (docx/LaTeX) e acentuar nomes próprios (São Paulo, Brasília)
+5. [feito] Template PLOS NTD em LaTeX, com nomes próprios acentuados
+6. Preencher o Funding Statement em `paper/plos/submission_fields.md`
+7. Conferir na fonte o número de 6 milhões de casos em 2024 (Gurgel-Gonçalves 2024), herdado do rascunho de maio

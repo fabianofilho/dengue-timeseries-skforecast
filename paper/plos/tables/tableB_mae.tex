@@ -1,0 +1,26 @@
+% gerado por scripts/build_paper_assets.py -- nao editar a mao
+
+\begin{table}[!ht]
+\centering
+\small
+\caption{\textbf{MAE (cases per month), primary model set.}}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+City & TimesFM & CatBoost & XGBoost & RF & LightGBM & SARIMA & Prophet & Naive \\
+\midrule
+S\~ao Paulo & 9{,}617 & \textbf{9{,}611} & 9{,}715 & 9{,}629 & 9{,}956 & 11{,}888 & 9{,}797 & 9{,}938 \\
+Rio de Janeiro & \textbf{1{,}966} & 2{,}366 & 3{,}349 & 2{,}282 & 2{,}753 & 3{,}958 & 2{,}071 & 2{,}316 \\
+Belo Horizonte & 6{,}384 & \textbf{5{,}707} & 6{,}578 & 6{,}193 & 7{,}499 & 16{,}192 & 6{,}431 & 8{,}294 \\
+Bras\'ilia & \textbf{3{,}823} & 3{,}965 & 4{,}290 & 4{,}090 & 4{,}095 & 5{,}558 & 4{,}023 & 4{,}319 \\
+Fortaleza & \textbf{1{,}434} & 1{,}596 & 2{,}093 & 1{,}593 & 1{,}825 & 2{,}273 & 1{,}624 & 1{,}698 \\
+Recife & \textbf{737} & 841 & 919 & 927 & 979 & 2{,}201 & 1{,}066 & 1{,}141 \\
+Manaus & 269 & 270 & 301 & \textbf{257} & 299 & 301 & 261 & 298 \\
+Salvador & \textbf{423} & 453 & 460 & 440 & 451 & 834 & 559 & 601 \\
+\midrule
+Mean & 3{,}082 & 3{,}101 & 3{,}463 & 3{,}176 & 3{,}482 & 5{,}401 & 3{,}229 & 3{,}576 \\
+\bottomrule
+\end{tabular}
+\begin{flushleft} Trained models were fitted on log1p-transformed counts; TimesFM was used zero-shot on raw counts. RF, Random Forest; Naive, seasonal naive. Bold, lowest value in the row.
+\end{flushleft}
+\label{tabB}
+\end{table}

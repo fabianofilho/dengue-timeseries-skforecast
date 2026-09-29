@@ -1,0 +1,27 @@
+% gerado por scripts/build_paper_assets.py -- nao editar a mao
+
+\begin{table}[!ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\caption{\textbf{sMAPE (\%) with 95\% moving block bootstrap intervals, primary model set.}}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+City & TimesFM & CatBoost & XGBoost & RF & LightGBM & SARIMA & Prophet & Naive \\
+\midrule
+S\~ao Paulo & 78.0 (61.1--87.3) & \textbf{75.6 (58.4--87.3)} & 81.2 (68.3--90.5) & 77.0 (60.9--87.0) & 88.9 (81.8--93.8) & 87.8 (74.3--100.2) & 77.3 (60.0--87.8) & 77.6 (63.8--85.1) \\
+Rio de Janeiro & 96.8 (84.8--109.6) & 97.5 (77.6--113.7) & 101.5 (89.0--112.8) & \textbf{93.5 (75.9--105.9)} & 101.2 (84.8--112.3) & 101.7 (87.8--111.9) & 109.6 (85.2--131.1) & 104.1 (89.3--119.0) \\
+Belo Horizonte & 97.1 (85.7--111.0) & \textbf{62.0 (45.4--75.8)} & 76.4 (58.0--90.8) & 70.3 (52.0--85.8) & 92.1 (81.5--102.5) & 95.8 (87.8--107.7) & 80.7 (68.4--90.9) & 79.6 (69.6--89.5) \\
+Bras\'ilia & 74.3 (62.8--86.4) & 76.6 (67.1--84.0) & 90.3 (76.5--101.1) & 81.5 (68.8--90.9) & 84.2 (74.5--90.1) & 80.2 (70.7--89.3) & 79.3 (63.8--92.8) & \textbf{74.2 (64.5--83.9)} \\
+Fortaleza & \textbf{64.2 (56.6--75.0)} & 69.4 (58.6--86.6) & 79.7 (69.1--93.5) & 68.4 (56.8--84.0) & 73.7 (66.5--85.7) & 73.4 (65.3--83.8) & 69.7 (58.9--86.6) & 69.6 (59.5--86.8) \\
+Recife & 67.3 (56.7--78.1) & \textbf{65.9 (50.3--80.5)} & 73.4 (58.7--86.7) & 71.0 (57.4--82.7) & 77.5 (65.6--88.9) & 87.1 (75.1--96.6) & 81.5 (61.5--103.4) & 83.3 (67.6--101.0) \\
+Manaus & 56.0 (47.3--61.9) & 55.7 (47.6--61.6) & 54.8 (44.3--61.6) & 53.9 (45.5--59.4) & 62.8 (54.7--69.3) & 62.4 (50.3--71.5) & \textbf{53.8 (41.3--59.4)} & 59.1 (46.7--68.4) \\
+Salvador & \textbf{68.9 (59.5--82.3)} & 71.8 (56.7--86.5) & 72.2 (57.6--84.0) & 71.0 (57.2--84.9) & 72.3 (63.6--82.1) & 79.5 (62.6--97.4) & 88.9 (68.4--108.0) & 87.2 (64.7--112.3) \\
+\midrule
+Mean & 75.3 & 71.8 & 78.7 & 73.3 & 81.6 & 83.5 & 80.1 & 79.3 \\
+\bottomrule
+\end{tabular}
+\begin{flushleft} Trained models were fitted on log1p-transformed counts; TimesFM was used zero-shot on raw counts. RF, Random Forest; Naive, seasonal naive. Bold, lowest value in the row.
+\end{flushleft}
+\label{tabA}
+\end{table}
