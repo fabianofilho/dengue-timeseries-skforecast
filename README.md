@@ -6,14 +6,15 @@ Análise de séries temporais de casos de dengue em diversas capitais brasileira
 
 Avaliar a capacidade de diferentes modelos de forecasting em prever o número mensal de casos de dengue, utilizando uma metodologia de backtesting com **rolling origin** para uma avaliação robusta e sem vazamento de dados.
 
-Modelos comparados:
+Modelos comparados (benchmark v2):
 
-1. **SARIMAX** — baseline estatístico com sazonalidade multiplicativa
-2. **LightGBM** — gradient boosting de alta performance
-3. **XGBoost** — implementação otimizada de gradient boosting
-4. **CatBoost** — gradient boosting com tratamento nativo de features categóricas
-5. **RandomForest** — ensemble de árvores de decisão
-6. **Ridge** — regressão linear com regularização L2
+1. **Seasonal naive** — repete o mesmo mês do último ano (benchmark de referência)
+2. **SARIMA** (1,1,1)(1,1,0)12 — estatístico
+3. **Prophet** (Meta)
+4. **LightGBM**, 5. **XGBoost**, 6. **CatBoost**, 7. **Random Forest** — `ForecasterRecursive` do skforecast, 24 lags
+8. **TimesFM 2.5** (Google Research) — modelo de fundação, zero-shot
+
+Todos os modelos treinados são ajustados em `log1p(y)` (análise primária) e também na escala bruta (sensibilidade).
 
 ## Dados
 
@@ -37,39 +38,33 @@ Modelos comparados:
 
 ## Metodologia
 
-- **Backtesting**: Rolling origin cross-validation
-- **Horizonte de previsão**: 12 meses
-- **Janela mínima de treino**: 48 meses
-- **Métricas**: MAE, RMSE, sMAPE
-- **Lags para modelos de ML**: 24
+- **Backtesting**: rolling origin com janela expansiva, 121 origens por cidade (jan/2014 a jan/2024)
+- **Horizonte**: 12 meses; treino mínimo de 48 meses; 1.452 previsões por modelo e cidade
+- **Métricas**: sMAPE (primária), MASE, MAE, RMSE
+- **Inferência**: moving block bootstrap sobre origens (bloco 12, 2.000 réplicas) e Diebold-Mariano (HAC + HLN) com Holm
+- **Sensibilidades**: escala bruta e janelas que terminam até dez/2023 (sem a epidemia de 2024)
 
-### Configuração dos Modelos
+## Resultados (v2, 8 capitais, 2014-2024)
 
-| Modelo | Configuração Principal |
-|---|---|
-| SARIMAX | order=(1,1,1), seasonal_order=(1,1,0,12) |
-| LightGBM | ForecasterRecursive, 24 lags, random_state=42 |
-| XGBoost | ForecasterRecursive, 24 lags, objective=reg:squarederror |
-| CatBoost | ForecasterRecursive, 24 lags, verbose=0 |
-| RandomForest | ForecasterRecursive, 24 lags, n_estimators=100 |
-| Ridge | ForecasterRecursive, 24 lags |
+sMAPE médio entre as 8 cidades (análise primária, modelos treinados em log1p):
 
-## Resultados (São Paulo, 2010–2024)
-
-| Modelo | MAE | RMSE | sMAPE (%) | n_previsões |
+| Modelo | sMAPE médio (%) | MASE médio | 1º lugar sMAPE | 1º lugar MASE |
 |---|---:|---:|---:|---:|
-| **CatBoost** | **9.892** | **43.838** | **78.7** | 1.452 |
-| XGBoost | 10.686 | 44.490 | 84.8 | 1.452 |
-| SARIMAX | 17.031 | 104.020 | 87.1 | 1.452 |
-| RandomForest | 10.727 | 43.822 | 87.3 | 1.452 |
-| Ridge | 3.862.818 | 99.332.702 | 118.5 | 1.452 |
-| LightGBM | 11.225 | 43.380 | 119.8 | 1.452 |
+| CatBoost | **71,8** | 1,37 | 3 | 1 |
+| Random Forest | 73,3 | 1,39 | 1 | 0 |
+| TimesFM (zero-shot) | 75,3 | **1,33** | 2 | 6 |
+| XGBoost | 78,7 | 1,47 | 0 | 0 |
+| Seasonal naive | 79,3 | 1,53 | 1 | 0 |
+| Prophet | 80,1 | 1,45 | 1 | 1 |
+| LightGBM | 81,6 | 1,47 | 0 | 0 |
+| SARIMA | 83,5 | 2,16 | 0 | 0 |
 
-**Observações:**
-- **CatBoost** apresentou o melhor desempenho geral (menor MAE e sMAPE).
-- Modelos de gradient boosting (CatBoost, XGBoost) superaram o baseline SARIMAX.
-- A alta variabilidade da dengue — com picos epidêmicos abruptos — representa um desafio inerente para todos os modelos.
-- Ridge e LightGBM apresentaram instabilidade neste dataset, sugerindo necessidade de ajuste de hiperparâmetros.
+- O TimesFM, sem treino nenhum, fica **comparável** aos melhores modelos treinados, mas **não é superior**: só 1 das 56 comparações é significativa após Holm (TimesFM melhor que SARIMA em Recife).
+- O TimesFM é o pior modelo em Belo Horizonte (97,1% vs 62,0% do CatBoost).
+- Em 1 mês o TimesFM é o melhor; em 12 meses nenhum modelo vence o seasonal naive.
+- Na escala bruta (configuração da v1), as árvores perdem para o seasonal naive em 6 de 8 cidades, e é isso que fazia o TimesFM parecer superior.
+
+Tabelas completas em `paper/tables/`, números em `results/v2/summary.json`, figuras em `paper/figures/`. Os resultados da v1 (maio/2026) continuam em `results/benchmark_*` para comparação.
 
 ## Como Usar
 
@@ -86,25 +81,15 @@ python scripts/fetch_infodengue.py --output-dir data/raw
 python scripts/process_data.py --input-dir data/raw --output-dir data/processed
 ```
 
-### 3. Executar o benchmark
+### 3. Executar o benchmark, a análise e as figuras
 
 ```bash
-# Apenas São Paulo
-PYTHONPATH=src python scripts/run_benchmark.py \
-    --input-csv data/processed/dengue_monthly_sao.csv \
-    --output-prefix results/benchmark_sao_paulo \
-    --horizon 12 \
-    --min-train-size 48
-
-# Todas as cidades
-make benchmark-all
+make benchmark-all   # 8 cidades em paralelo, ~40 min num Apple M4; retomável via results/v2/cache
+make analysis        # métricas, ICs, testes e tabelas (paper/tables, results/v2)
+make figures         # figuras do manuscrito (paper/figures)
 ```
 
-### 4. Gerar figuras
-
-```bash
-python scripts/generate_figures.py
-```
+Os modelos rodam com 1 thread cada (`DENGUE_N_JOBS`, padrão 1): no macOS ARM o XGBoost multithread trava depois que LightGBM e torch carregam outro `libomp`.
 
 ## Estrutura do Repositório
 
@@ -120,14 +105,22 @@ python scripts/generate_figures.py
 │   ├── 01_exploratory_analysis.ipynb     # Análise exploratória
 │   ├── 02_benchmark_models.ipynb         # Benchmark dos modelos
 │   └── 03_forecast_future.ipynb          # Previsão futura com o melhor modelo
+├── paper/
+│   ├── manuscript.md                     # Manuscrito (PLOS NTD)
+│   ├── figures/ tables/                  # Gerados por make figures / make analysis
+│   ├── refs/references.bib
+│   └── submission/                       # Cover letter, highlights, checklist
 ├── results/
-│   ├── comparisons/                      # Comparações entre cidades
-│   └── figures/                          # Figuras geradas
+│   ├── benchmark_*                       # v1 (maio/2026), mantidos para reprodutibilidade
+│   ├── figures/                          # Figuras exploratórias da v1
+│   └── v2/                               # Previsões, métricas, testes e summary.json da v2
 ├── scripts/
 │   ├── fetch_infodengue.py               # Coleta de dados via API
 │   ├── process_data.py                   # Processamento e agregação mensal
-│   ├── run_benchmark.py                  # Orquestração do backtesting
-│   └── generate_figures.py              # Geração de figuras
+│   ├── run_benchmark.py                  # Backtesting rolling origin (14 modelos)
+│   ├── analyze_results.py                # Métricas, ICs, testes e tabelas do paper
+│   ├── generate_paper_figures.py         # Figuras do manuscrito
+│   └── generate_figures.py               # Figuras exploratórias da v1
 └── src/
     └── dengue_forecast/
         ├── __init__.py
@@ -138,11 +131,11 @@ python scripts/generate_figures.py
 
 ## Próximos Passos
 
-1. Adicionar variáveis exógenas (temperatura, umidade, índice pluviométrico) via API Mosqlimate
-2. Otimizar hiperparâmetros com `optuna` e `skforecast`
-3. Implementar previsão probabilística com intervalos de confiança
-4. Expandir o benchmark para todas as capitais
-5. Desenvolver modelo global multi-série com `ForecasterRecursiveMultiSeries`
+1. Avaliar as previsões probabilísticas (quantis do TimesFM, WIS)
+2. Adicionar covariáveis climáticas via API Mosqlimate
+3. Otimizar hiperparâmetros dos modelos treinados
+4. Testar outros modelos de fundação (Chronos, Moirai) e fine-tuning
+5. Expandir para municípios menores
 
 ## Referências
 

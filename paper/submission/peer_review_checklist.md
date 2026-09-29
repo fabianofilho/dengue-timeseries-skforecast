@@ -1,79 +1,49 @@
-# Peer-Review Interno — Checklist TRIPOD+AI
+# Peer-Review Interno — Checklist TRIPOD+AI (v2)
 
-Paper: Zero-Shot Foundation Models for Dengue Forecasting: A Multi-City Benchmark
-Data: 2026-05-03
+Paper: A Zero-Shot Foundation Model Versus City-Trained Models for 12-Month Dengue Forecasting
+Revisão: 2026-09-29 (benchmark v2, branch feat/benchmark-v2)
 
----
+## O que mudou da v1 (03/05/2026) e por quê
 
-## Rigor metodologico
+A v1 afirmava superioridade do TimesFM (1º em 7/8 cidades). A revisão encontrou:
+- números do texto que não batiam com os CSVs (médias do CatBoost 80,1/82,7 vs 85,6 real; MAE "6/8" vs 8/8; negritos errados na Tabela 3);
+- Prophet "89,7" em SP sem nenhum resultado que o sustentasse;
+- ICs bootstrap sem script e calculados como se as 1.452 previsões sobrepostas fossem independentes (IC ~4,5x estreito demais);
+- Methods em desacordo com o código (interpolação inexistente, versões erradas, TimesFM 2.5 "de 2024");
+- ausência de baseline seasonal naive e modelos treinados na escala bruta (árvores não extrapolam acima do máximo do treino).
 
-- [x] Reporting guideline aplicada: TRIPOD+AI 2024 (Collins et al., BMJ 2024, doi:10.1136/bmj-2023-078378) — declarado na abertura de Methods
-- [x] Sample size: 180 observacoes por cidade, 121 folds, 1.452 previsoes por modelo por cidade — justificado na secao 2.4
-- [x] Missing data: interpolacao linear para semanas faltantes (<0.5%) declarado na secao 2.1
-- [x] Multiple comparisons: 7 modelos comparados; nao foi feito teste de significancia estatistica (benchmarks descritivos) — limitacao aceitavel para este tipo de estudo, pode ser mencionada
-- [x] IC 95%: AUSENTE nas metricas. **ACAO NECESSARIA:** calcular IC 95% por bootstrap para MAE, RMSE, sMAPE em pelo menos uma cidade representativa
-- [x] Validacao externa: nao aplicavel (nao e estudo de desenvolvimento de modelo clinico); o rolling-origin CV ja e validacao temporal prospectiva
-- [x] Train/test split: rolling-origin sem leakage temporal — confirmado (Kapoor 2023 citado)
+Com baselines justos (log1p) e inferência por block bootstrap, o TimesFM é comparável, não superior. O paper foi reenquadrado.
 
-**Pendencia critica: IC 95% para as metricas principais.**
+## Rigor metodológico
 
----
+- [x] TRIPOD+AI 2024 declarado
+- [x] Seasonal naive como benchmark; MASE além de sMAPE
+- [x] Todos os modelos treinados em log1p (decisão registrada antes de ver os resultados v2; escala bruta como sensibilidade)
+- [x] IC 95% por moving block bootstrap sobre origens (bloco 12, 2.000 réplicas, seed fixa)
+- [x] Diebold-Mariano HAC + correção HLN, Holm sobre 56 comparações
+- [x] Sensibilidades: escala bruta (Tabela S3) e sem 2024 (Tabela S4)
+- [x] Reprodutibilidade: modelos em escala bruta repetem a v1 (diferença máxima 0,46 pp)
+- [x] Todos os números do texto saem de `scripts/analyze_results.py` (`results/v2/summary.json`, `paper/tables/`)
+- [ ] Sem margem de equivalência pré-especificada: o paper diz explicitamente que não prova equivalência
 
-## Transparencia
+## Transparência
 
-- [x] Codigo disponivel: https://github.com/fabianofilho/dengue-timeseries-skforecast
-- [x] Dados: InfoDengue API publica — link na secao Data availability
-- [x] Pre-registro: nao aplicavel (estudo retrospectivo descritivo)
-- [x] Conflito de interesse: declarado (nenhum)
-- [x] Aprovacao etica: declarada (dados publicos agregados, dispensado)
-- [ ] **Versao exata do codigo (commit hash):** adicionar o hash do commit atual no manuscrito
+- [x] Código, dados processados, previsões e tabelas no repositório
+- [x] Versões exatas dos pacotes na seção 2.8
+- [ ] Criar a tag `paper-v2` no commit de merge (citada no manuscrito)
+- [x] Conflito de interesse e ética declarados
 
----
+## Anti-leakage
 
-## Clareza
+- [x] Rolling origin com janela expansiva; mesmos dados de treino e alvos para todos os modelos
+- [x] Nenhuma informação da janela de teste no ajuste ou na configuração
+- [x] Contaminação do pré-treino do TimesFM discutida (GIFT-Eval tem CDC FluView e Project Tycho, sem InfoDengue; Wikipedia/Trends sobrepõem o período)
+- [x] Dados consolidados (não vintages em tempo real) declarados como limitação
 
-- [x] Abstract reflete o manuscrito: sim, numeros conferem com Tables 2 e 3
-- [x] Numeros consistentes: sMAPE, MAE, RMSE iguais entre abstract, texto e tabelas
-- [x] Figuras com caption: sim (4 figuras descritas)
-- [x] Acronimos definidos no 1o uso: sMAPE, MAE, RMSE, SINAN, CV, SARIMAX — verificar Prophet (definido?), InfoDengue (definido)
-- [x] Discussion nao supera os dados: sim, linguagem cautelosa
+## Pendências antes da submissão
 
-**Pendencia menor:** Prophet nao e expandido na primeira ocorrencia. Adicionar "(Aiche Bayesian Decomposition model, Meta)" ou similar.
-
----
-
-## Anti-leakage (especifico ML/IA)
-
-- [x] Train/test split claro: rolling-origin, min_train=48, horizon=12
-- [x] Sem leakage temporal: cada fold usa apenas dados anteriores ao periodo previsto
-- [x] Feature engineering: apenas lags autoregressivos da propria serie (sem info do test)
-- [x] Hyperparameter tuning: fixo (nao tuned por fold) — declarado explicitamente
-- [x] Calibration calculada no test: metricas calculadas nas previsoes out-of-sample
-- [x] Kapoor & Narayanan 2023 citado
-
----
-
-## Etica e fairness
-
-- [ ] Performance por subgrupos demograficos: NAO APLICAVEL (dados agregados por cidade, sem desagregacao por idade/sexo/raca)
-- [x] Discussao de potencial vies: under-reporting, fixed hyperparameters — secao 4.4
-- [x] Limitacoes de generalizabilidade: municipios menores, populacoes rurais — secao 4.4
-
----
-
-## Pendencias antes da submissao
-
-### Critica (bloqueia submissao)
-1. **IC 95% bootstrap** para sMAPE, MAE, RMSE por cidade e modelo
-2. **Commit hash** do repositorio no manuscrito (secao 2.6)
-3. **Afiliacao institucional** do autor
-
-### Importante (fortemente recomendada)
-4. **Prophet para todas as cidades**: instalar a dependencia e re-rodar o benchmark para eliminar "n/a" da Table 2
-5. **Tabela 1 descritivos exatos**: CV calculado com formula correta (verificar se e std/mean ou outro)
-6. **Word count final**: preencher o campo no cabecalho
-
-### Opcional (melhora qualidade)
-7. Adicionar teste de Diebold-Mariano ou Wilcoxon para diferenca entre TimesFM e CatBoost (especialmente Sao Paulo, onde a margem e de apenas 0.7 pp)
-8. Figura de calibracao: residuos ao longo do tempo para TimesFM (verifica drift)
-9. Supplementary: tabela completa com LightGBM e Prophet para todas as cidades
+1. Confirmar nome e afiliação do autor (mantidos: Fabiano Bozza Filho, LABDAPS/FSP/USP)
+2. Coautores? A cover letter e o manuscrito estão com autor único
+3. Criar a tag `paper-v2` após o merge
+4. Opcional: avaliar os quantis do TimesFM (WIS) e um modelo com covariáveis climáticas (Mosqlimate)
+5. Opcional: converter para o template da PLOS NTD (docx/LaTeX) e acentuar nomes próprios (São Paulo, Brasília)

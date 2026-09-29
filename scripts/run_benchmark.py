@@ -9,6 +9,7 @@ Exemplo de uso:
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import pandas as pd
@@ -17,12 +18,31 @@ from dengue_forecast.evaluate import run_backtest
 from dengue_forecast.models import (
     ProphetForecaster,
     SarimaxForecaster,
+    SeasonalNaiveForecaster,
     TimesFMForecaster,
     catboost_forecaster,
     lgbm_forecaster,
     randomforest_forecaster,
     xgboost_forecaster,
 )
+
+
+DEFAULT_MODELS = [
+    "seasonal_naive",
+    "sarimax",
+    "sarimax_log",
+    "prophet",
+    "prophet_log",
+    "lgbm",
+    "lgbm_log",
+    "xgboost",
+    "xgboost_log",
+    "catboost",
+    "catboost_log",
+    "randomforest",
+    "randomforest_log",
+    "timesfm",
+]
 
 
 def parse_args() -> argparse.Namespace:
@@ -34,8 +54,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--min-train-size", type=int, default=48, help="Janela mínima de treino (meses)")
     parser.add_argument(
         "--models",
-        default="sarimax,prophet,lgbm,xgboost,catboost,randomforest,timesfm",
-        help="Lista de modelos para rodar (separados por vírgula)",
+        default=",".join(DEFAULT_MODELS),
+        help="Lista de modelos (separados por vírgula). Sufixo _log = ajuste em log1p(y).",
     )
     parser.add_argument("--output-prefix", required=True, help="Prefixo para os arquivos de saída")
     parser.add_argument("--lags", type=int, default=24, help="Número de lags para modelos de ML")
@@ -44,22 +64,30 @@ def parse_args() -> argparse.Namespace:
 
 def build_models(model_names: list[str], lags: int):
     """Constrói a lista de objetos de modelo com base nos nomes fornecidos."""
-    selected = {m.strip().lower() for m in model_names if m.strip()}
+    selected = [m.strip().lower() for m in model_names if m.strip()]
+    factories = {
+        "lgbm": lgbm_forecaster,
+        "xgboost": xgboost_forecaster,
+        "catboost": catboost_forecaster,
+        "randomforest": randomforest_forecaster,
+    }
     models = []
-    if "sarimax" in selected:
-        models.append(SarimaxForecaster(order=(1, 1, 1), seasonal_order=(1, 1, 0, 12)))
-    if "prophet" in selected:
-        models.append(ProphetForecaster())
-    if "lgbm" in selected:
-        models.append(lgbm_forecaster(lags=lags))
-    if "xgboost" in selected:
-        models.append(xgboost_forecaster(lags=lags))
-    if "catboost" in selected:
-        models.append(catboost_forecaster(lags=lags))
-    if "randomforest" in selected:
-        models.append(randomforest_forecaster(lags=lags))
-    if "timesfm" in selected:
-        models.append(TimesFMForecaster())
+    for name in selected:
+        base, log_target = (name[:-4], True) if name.endswith("_log") else (name, False)
+        if base == "seasonal_naive":
+            models.append(SeasonalNaiveForecaster())
+        elif base == "sarimax":
+            models.append(
+                SarimaxForecaster(order=(1, 1, 1), seasonal_order=(1, 1, 0, 12), log_target=log_target)
+            )
+        elif base == "prophet":
+            models.append(ProphetForecaster(log_target=log_target))
+        elif base in factories:
+            models.append(factories[base](lags=lags, log_target=log_target))
+        elif base == "timesfm" and not log_target:
+            models.append(TimesFMForecaster())
+        else:
+            raise ValueError(f"Modelo desconhecido: {name}")
 
     if not models:
         raise ValueError("Nenhum modelo válido selecionado.")
@@ -81,22 +109,39 @@ def main() -> None:
     metrics_rows = []
     preds_frames = []
 
+    output_prefix = Path(args.output_prefix)
+    output_prefix.parent.mkdir(parents=True, exist_ok=True)
+    # Cache por modelo: permite retomar uma rodada interrompida sem refazer o que já terminou
+    cache_dir = output_prefix.parent / "cache"
+    cache_dir.mkdir(exist_ok=True)
+
     print(f"[INFO] Iniciando benchmark para {args.input_csv}...")
     for model in models:
-        metric_row, pred_df = run_backtest(
-            series=series,
-            model=model,
-            horizon=args.horizon,
-            min_train_size=args.min_train_size,
-        )
+        cache_path = cache_dir / f"{output_prefix.name}__{model.name}.json"
+        if cache_path.exists():
+            print(f"  [INFO] {model.name}: usando cache {cache_path}")
+            cached = json.loads(cache_path.read_text())
+            metric_row = cached["metrics"]
+            pred_df = pd.DataFrame(cached["predictions"])
+        else:
+            metric_row, pred_df = run_backtest(
+                series=series,
+                model=model,
+                horizon=args.horizon,
+                min_train_size=args.min_train_size,
+            )
+            cache_path.write_text(
+                json.dumps(
+                    {"metrics": metric_row, "predictions": pred_df.to_dict(orient="records")},
+                    default=str,
+                )
+            )
         if metric_row is not None:
             metrics_rows.append(metric_row)
         if not pred_df.empty:
             preds_frames.append(pred_df)
 
     # Salva os resultados
-    output_prefix = Path(args.output_prefix)
-    output_prefix.parent.mkdir(parents=True, exist_ok=True)
 
     if metrics_rows:
         metrics_df = pd.DataFrame(metrics_rows).sort_values(by="smape")
