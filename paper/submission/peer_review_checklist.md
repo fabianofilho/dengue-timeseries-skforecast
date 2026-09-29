@@ -58,4 +58,4 @@ Com baselines justos (log1p) e inferência por block bootstrap, o TimesFM é com
 4. Opcional: avaliar os quantis do TimesFM (WIS) e um modelo com covariáveis climáticas (Mosqlimate)
 5. [feito] Template PLOS NTD em LaTeX, com nomes próprios acentuados
 6. [feito] Funding Statement: sem financiamento
-7. Conferir na fonte o número de 6 milhões de casos em 2024 (Gurgel-Gonçalves 2024), herdado do rascunho de maio
+7. [feito] Número de 2024 conferido no texto de Gurgel-Gonçalves 2024: ~6 milhões de casos prováveis e 4.000 óbitos até 15/06/2024 (dado parcial, não anual); frase corrigida

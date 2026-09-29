@@ -14,7 +14,6 @@ Paper para a PLOS NTD comparando o TimesFM 2.5 zero-shot com modelos treinados p
 
 ## Próximos passos
 1. Definir coautores (hoje o autor é único); Funding Statement já preenchido (sem financiamento)
-2. Conferir na fonte o número de 6 milhões de casos em 2024 (Gurgel-Gonçalves 2024)
 3. Opcional: avaliar os quantis do TimesFM (WIS) e covariáveis climáticas (Mosqlimate)
 4. Opcional: testar Chronos e Moirai
 

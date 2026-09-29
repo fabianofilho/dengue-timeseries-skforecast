@@ -35,7 +35,7 @@ Health authorities in Brazil plan dengue control, hospital beds, and supply purc
 
 ## 1. Introduction
 
-Dengue is the most common arboviral infection worldwide, with an estimated 390 million infections per year [Bhatt2013]. Brazil carries a large share of this burden: in 2024 it reported more than 6 million probable cases, the highest annual count on record, with outbreaks in all five macroregions [GurgelGoncalves2024]. The costs include medical care, lost productivity, and deaths [Siqueira2022].
+Dengue is the most common arboviral infection worldwide, with an estimated 390 million infections per year [Bhatt2013]. Brazil carries a large share of this burden: by mid-June 2024 it had recorded approximately 6 million probable cases and 4,000 confirmed deaths, the largest dengue epidemic in its history [GurgelGoncalves2024]. The costs include medical care, lost productivity, and deaths [Siqueira2022].
 
 Forecasts of dengue cases months ahead can help health authorities position supplies, schedule vector control, and plan hospital capacity before peaks [Roster2022]. In Brazil, the InfoDengue system (Fiocruz/FGV) publishes surveillance data for every municipality and has supported several forecasting studies [Codeco2018infodengue]. Most published approaches, however, rely on models fitted separately for each location, from ARIMA-family models to tree ensembles and neural networks, which must be refitted and monitored as local dynamics change [Leung2023, Roster2022, Chen2025lstm].
 
