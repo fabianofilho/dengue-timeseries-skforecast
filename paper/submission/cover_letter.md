@@ -14,7 +14,7 @@ The manuscript has not been submitted elsewhere. The author declares no conflict
 
 Sincerely,
 
-Fabiano Bozza Filho  
+Fabiano Novaes Barcellos Filho  
 Laboratorio de Big Data e Analise Preditiva em Saude (LABDAPS)  
 Faculdade de Saude Publica, Universidade de Sao Paulo  
 fabiano.nb@gmail.com

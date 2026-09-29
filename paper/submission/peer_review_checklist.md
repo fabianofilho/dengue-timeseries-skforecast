@@ -42,7 +42,7 @@ Com baselines justos (log1p) e inferência por block bootstrap, o TimesFM é com
 
 ## Pendências antes da submissão
 
-1. Confirmar nome e afiliação do autor (mantidos: Fabiano Bozza Filho, LABDAPS/FSP/USP)
+1. Nome e afiliação confirmados: Fabiano Novaes Barcellos Filho, LABDAPS/FSP/USP (a v1 tinha "Bozza" por erro)
 2. Coautores? A cover letter e o manuscrito estão com autor único
 3. Criar a tag `paper-v2` após o merge
 4. Opcional: avaliar os quantis do TimesFM (WIS) e um modelo com covariáveis climáticas (Mosqlimate)

@@ -31,7 +31,7 @@ Backup: Epidemics / BMC Infectious Diseases
 
 ## Authors
 
-- Fabiano Bozza Filho (corresponding) — [affiliation TBD]
+- Fabiano Novaes Barcellos Filho (corresponding) — LABDAPS, Faculdade de Saude Publica, USP
 
 ## Key results (from benchmark)
 

@@ -2,12 +2,12 @@
 
 **Running title:** Zero-shot versus trained models for dengue forecasting in Brazil
 
-**Authors:** Fabiano Bozza Filho^1^
+**Authors:** Fabiano Novaes Barcellos Filho^1^
 
 **Affiliations:**  
 ^1^ Laboratorio de Big Data e Analise Preditiva em Saude (LABDAPS), Faculdade de Saude Publica, Universidade de Sao Paulo, Sao Paulo, Brazil
 
-**Corresponding author:** Fabiano Bozza Filho, fabiano.nb@gmail.com
+**Corresponding author:** Fabiano Novaes Barcellos Filho, fabiano.nb@gmail.com
 
 **Keywords:** dengue; forecasting; foundation model; time series; machine learning; Brazil; TimesFM; epidemiological surveillance
 
