@@ -534,5 +534,10 @@
     "n_boot": 2000,
     "block": 12,
     "seed": 20260928
+  },
+  "ci_width_ratio_block_over_iid": {
+    "min": 3.4,
+    "median": 4.5,
+    "max": 4.9
   }
 }

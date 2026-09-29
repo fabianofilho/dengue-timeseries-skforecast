@@ -1,7 +1,7 @@
 # Highlights (max 85 chars each)
 
-- TimesFM ranked first in 7 of 8 Brazilian state capitals by sMAPE
-- Zero-shot model: no city-specific training, fine-tuning, or retraining
-- Bootstrap CIs confirm advantage is reliable in 6 of 7 comparable cities
-- Belo Horizonte exception: atypical local pattern favors supervised models
-- 14-year rolling benchmark; 81,312 total predictions across 7 models
+- Zero-shot TimesFM matched, but did not beat, city-trained dengue forecasters
+- Mean sMAPE: CatBoost 71.8%, Random Forest 73.3%, TimesFM 75.3%, naive 79.3%
+- Only 1 of 56 TimesFM comparisons was significant after Holm correction
+- TimesFM failed in Belo Horizonte; at 12 months no model beat seasonal naive
+- Raw-scale baselines and iid bootstrap would have shown TimesFM as superior

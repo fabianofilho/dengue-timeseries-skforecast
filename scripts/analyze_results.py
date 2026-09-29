@@ -217,6 +217,19 @@ def analyze_set(df: pd.DataFrame, models: list[str], rng: np.random.Generator) -
     return metrics, tests
 
 
+def iid_vs_block_ci_width(df: pd.DataFrame, metrics: pd.DataFrame, rng: np.random.Generator) -> pd.DataFrame:
+    """Largura do IC 95% de sMAPE do TimesFM: bootstrap iid sobre previsões vs block bootstrap por origem."""
+    rows = []
+    for city in CITY_LABELS:
+        terms = df[(df["city"] == city) & (df["model"] == "timesfm")]["smape_term"].to_numpy()
+        boot = terms[rng.integers(0, len(terms), size=(N_BOOT, len(terms)))].mean(axis=1)
+        lo, hi = np.percentile(boot, [2.5, 97.5])
+        r = metrics[(metrics["city"] == city) & (metrics["model"] == "timesfm")].iloc[0]
+        block_w = r["smape_hi"] - r["smape_lo"]
+        rows.append({"city": city, "iid_width": hi - lo, "block_width": block_w, "ratio": block_w / (hi - lo)})
+    return pd.DataFrame(rows)
+
+
 def fmt(x: float, nd: int = 1) -> str:
     return f"{x:,.{nd}f}"
 
@@ -244,6 +257,31 @@ def wide_table(metrics: pd.DataFrame, models: list[str], k: str, nd: int = 1, ci
     mean = metrics[metrics["model"].isin(models)].groupby("model")[k].mean()
     rows.append(["Mean (8 cities)"] + [fmt(mean[m], nd) for m in models])
     return md_table(["City"] + [MODEL_LABELS[m] for m in models], rows)
+
+
+REGIONS = {
+    "sao": "Southeast",
+    "rio": "Southeast",
+    "belo": "Southeast",
+    "brasilia": "Central-West",
+    "fortaleza": "Northeast",
+    "recife": "Northeast",
+    "manaus": "North",
+    "salvador": "Northeast",
+}
+
+
+def descriptive_table(data_dir: Path) -> str:
+    """Tabela 1: descritivos das séries mensais (2010-2024), ordenada pelo total."""
+    rows = []
+    for city, label in CITY_LABELS.items():
+        s = pd.read_csv(data_dir / f"dengue_monthly_{city}.csv", index_col=0, parse_dates=True)["value"]
+        rows.append((s.sum(), [
+            label, REGIONS[city], str(len(s)), fmt(s.mean(), 0), fmt(s.median(), 1), fmt(s.max(), 0),
+            fmt(s.min(), 0), fmt(100 * s.std() / s.mean(), 0), fmt(s.sum(), 0),
+        ]))
+    rows = [r for _, r in sorted(rows, key=lambda x: -x[0])]
+    return md_table(["City", "Region", "Months", "Mean", "Median", "Max", "Min", "CV (%)", "Total"], rows)
 
 
 def reproducibility_check(results_dir: Path, v2: pd.DataFrame) -> pd.DataFrame:
@@ -307,10 +345,17 @@ def main() -> None:
     )
     by_h.to_csv(results_dir / "by_horizon_primary.csv", index=False)
 
+    ci_width = iid_vs_block_ci_width(df, metrics, rng)
+    ci_width.to_csv(results_dir / "ci_width_iid_vs_block.csv", index=False)
+
     repro = reproducibility_check(results_dir, pd.concat([metrics_raw]))
     repro.to_csv(results_dir / "reproducibility_v1_v2.csv", index=False)
 
     # ---------------- Tabelas do manuscrito ----------------
+    (tables_dir / "table1_descriptives.md").write_text(
+        "Table 1. Monthly notified dengue cases by city, January 2010 to December 2024\n\n"
+        + descriptive_table(Path("data/processed"))
+    )
     (tables_dir / "table2_smape_ci.md").write_text(
         "Table 2. sMAPE (%) with 95% block-bootstrap CI, primary model set\n\n"
         + wide_table(metrics, PRIMARY_MODELS, "smape", ci=True)
@@ -389,6 +434,11 @@ def main() -> None:
         "last_origin": str(df["origin"].max().date()),
         "reproducibility_max_abs_diff_smape": float(repro["abs_diff"].max()) if not repro.empty else None,
         "bootstrap": {"n_boot": N_BOOT, "block": BLOCK, "seed": SEED},
+        "ci_width_ratio_block_over_iid": {
+            "min": round(float(ci_width["ratio"].min()), 1),
+            "median": round(float(ci_width["ratio"].median()), 1),
+            "max": round(float(ci_width["ratio"].max()), 1),
+        },
     }
     (results_dir / "summary.json").write_text(json.dumps(summary, indent=2, default=str))
     print(json.dumps(summary, indent=2, default=str))
