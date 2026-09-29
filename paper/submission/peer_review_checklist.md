@@ -57,5 +57,5 @@ Com baselines justos (log1p) e inferência por block bootstrap, o TimesFM é com
 3. [feito] Tag `paper-v2`
 4. Opcional: avaliar os quantis do TimesFM (WIS) e um modelo com covariáveis climáticas (Mosqlimate)
 5. [feito] Template PLOS NTD em LaTeX, com nomes próprios acentuados
-6. Preencher o Funding Statement em `paper/plos/submission_fields.md`
+6. [feito] Funding Statement: sem financiamento
 7. Conferir na fonte o número de 6 milhões de casos em 2024 (Gurgel-Gonçalves 2024), herdado do rascunho de maio

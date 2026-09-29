@@ -13,7 +13,7 @@ Paper para a PLOS NTD comparando o TimesFM 2.5 zero-shot com modelos treinados p
 - Manuscrito no template LaTeX da PLOS NTD em `paper/plos/` (`make paper`), com PDF, S1 Appendix e Fig1-4.tif prontos.
 
 ## Próximos passos
-1. Definir coautores (hoje o autor é único) e preencher o Funding Statement (`paper/plos/submission_fields.md`)
+1. Definir coautores (hoje o autor é único); Funding Statement já preenchido (sem financiamento)
 2. Conferir na fonte o número de 6 milhões de casos em 2024 (Gurgel-Gonçalves 2024)
 3. Opcional: avaliar os quantis do TimesFM (WIS) e covariáveis climáticas (Mosqlimate)
 4. Opcional: testar Chronos e Moirai

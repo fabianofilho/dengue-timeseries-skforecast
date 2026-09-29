@@ -7,7 +7,7 @@ Textos prontos para colar:
 All data are publicly available. Monthly dengue case counts were obtained from the InfoDengue public API (https://info.dengue.mat.br/api/). The processed series, all model forecasts, result files, and the code that reproduces every table, figure, and number in the manuscript are available at https://github.com/fabianofilho/dengue-timeseries-skforecast (release tag paper-v2).
 
 **Funding Statement**
-[PREENCHER: houve bolsa ou financiamento? Se não: "The author received no specific funding for this work."]
+The author received no specific funding for this work.
 
 **Competing Interests**
 The author has declared that no competing interests exist.
