@@ -1,0 +1,538 @@
+{
+  "primary": {
+    "mean_smape": {
+      "timesfm": 75.3,
+      "catboost_log": 71.8,
+      "xgboost_log": 78.7,
+      "randomforest_log": 73.3,
+      "lgbm_log": 81.6,
+      "sarimax_log": 83.5,
+      "prophet_log": 80.1,
+      "seasonal_naive": 79.3
+    },
+    "median_smape": {
+      "timesfm": 71.6,
+      "catboost_log": 70.6,
+      "xgboost_log": 78.1,
+      "randomforest_log": 71.0,
+      "lgbm_log": 80.8,
+      "sarimax_log": 83.7,
+      "prophet_log": 80.0,
+      "seasonal_naive": 78.6
+    },
+    "mean_mase": {
+      "timesfm": 1.33,
+      "catboost_log": 1.37,
+      "xgboost_log": 1.47,
+      "randomforest_log": 1.39,
+      "lgbm_log": 1.47,
+      "sarimax_log": 2.16,
+      "prophet_log": 1.45,
+      "seasonal_naive": 1.53
+    },
+    "first_place_smape": {
+      "timesfm": 2,
+      "catboost_log": 3,
+      "xgboost_log": 0,
+      "randomforest_log": 1,
+      "lgbm_log": 0,
+      "sarimax_log": 0,
+      "prophet_log": 1,
+      "seasonal_naive": 1
+    },
+    "first_place_mase": {
+      "timesfm": 6,
+      "catboost_log": 1,
+      "xgboost_log": 0,
+      "randomforest_log": 0,
+      "lgbm_log": 0,
+      "sarimax_log": 0,
+      "prophet_log": 1,
+      "seasonal_naive": 0
+    },
+    "timesfm_vs_best_comparator": [
+      {
+        "city": "belo",
+        "comparator": "catboost_log",
+        "smape_comparator": 61.979,
+        "diff_smape": 35.088,
+        "diff_lo": 19.889,
+        "diff_hi": 56.887,
+        "p_holm": 0.055
+      },
+      {
+        "city": "brasilia",
+        "comparator": "seasonal_naive",
+        "smape_comparator": 74.168,
+        "diff_smape": 0.094,
+        "diff_lo": -8.472,
+        "diff_hi": 10.573,
+        "p_holm": 1.0
+      },
+      {
+        "city": "fortaleza",
+        "comparator": "randomforest_log",
+        "smape_comparator": 68.398,
+        "diff_smape": -4.199,
+        "diff_lo": -16.359,
+        "diff_hi": 7.243,
+        "p_holm": 1.0
+      },
+      {
+        "city": "manaus",
+        "comparator": "prophet_log",
+        "smape_comparator": 53.809,
+        "diff_smape": 2.229,
+        "diff_lo": -2.424,
+        "diff_hi": 10.632,
+        "p_holm": 1.0
+      },
+      {
+        "city": "recife",
+        "comparator": "catboost_log",
+        "smape_comparator": 65.893,
+        "diff_smape": 1.375,
+        "diff_lo": -8.75,
+        "diff_hi": 13.943,
+        "p_holm": 1.0
+      },
+      {
+        "city": "rio",
+        "comparator": "randomforest_log",
+        "smape_comparator": 93.46,
+        "diff_smape": 3.343,
+        "diff_lo": -7.392,
+        "diff_hi": 16.518,
+        "p_holm": 1.0
+      },
+      {
+        "city": "salvador",
+        "comparator": "randomforest_log",
+        "smape_comparator": 70.953,
+        "diff_smape": -2.098,
+        "diff_lo": -9.9,
+        "diff_hi": 7.449,
+        "p_holm": 1.0
+      },
+      {
+        "city": "sao",
+        "comparator": "catboost_log",
+        "smape_comparator": 75.6,
+        "diff_smape": 2.404,
+        "diff_lo": -10.19,
+        "diff_hi": 17.472,
+        "p_holm": 1.0
+      }
+    ],
+    "n_cities_timesfm_sig_better_holm": 0,
+    "n_tests_sig_better": 1,
+    "n_tests_sig_worse": 0,
+    "n_tests": 56,
+    "cities_model_worse_than_naive": {
+      "timesfm": [
+        "belo",
+        "brasilia",
+        "sao"
+      ],
+      "catboost_log": [
+        "brasilia"
+      ],
+      "xgboost_log": [
+        "brasilia",
+        "fortaleza",
+        "sao"
+      ],
+      "randomforest_log": [
+        "brasilia"
+      ],
+      "lgbm_log": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "sao"
+      ],
+      "sarimax_log": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "recife",
+        "sao"
+      ],
+      "prophet_log": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "rio",
+        "salvador"
+      ]
+    }
+  },
+  "raw": {
+    "mean_smape": {
+      "timesfm": 75.3,
+      "catboost": 85.6,
+      "xgboost": 85.9,
+      "randomforest": 89.3,
+      "lgbm": 114.6,
+      "sarimax": 105.5,
+      "prophet": 115.4,
+      "seasonal_naive": 79.3
+    },
+    "median_smape": {
+      "timesfm": 71.6,
+      "catboost": 78.1,
+      "xgboost": 84.3,
+      "randomforest": 84.9,
+      "lgbm": 106.6,
+      "sarimax": 101.4,
+      "prophet": 101.1,
+      "seasonal_naive": 78.6
+    },
+    "mean_mase": {
+      "timesfm": 1.33,
+      "catboost": 1.52,
+      "xgboost": 1.73,
+      "randomforest": 1.75,
+      "lgbm": 1.94,
+      "sarimax": 2.24,
+      "prophet": 1.51,
+      "seasonal_naive": 1.53
+    },
+    "first_place_smape": {
+      "timesfm": 5,
+      "catboost": 0,
+      "xgboost": 0,
+      "randomforest": 0,
+      "lgbm": 0,
+      "sarimax": 0,
+      "prophet": 0,
+      "seasonal_naive": 3
+    },
+    "first_place_mase": {
+      "timesfm": 8,
+      "catboost": 0,
+      "xgboost": 0,
+      "randomforest": 0,
+      "lgbm": 0,
+      "sarimax": 0,
+      "prophet": 0,
+      "seasonal_naive": 0
+    },
+    "timesfm_vs_best_comparator": [
+      {
+        "city": "belo",
+        "comparator": "seasonal_naive",
+        "smape_comparator": 79.595,
+        "diff_smape": 17.472,
+        "diff_lo": 2.952,
+        "diff_hi": 36.422,
+        "p_holm": 1.0
+      },
+      {
+        "city": "brasilia",
+        "comparator": "seasonal_naive",
+        "smape_comparator": 74.168,
+        "diff_smape": 0.094,
+        "diff_lo": -8.366,
+        "diff_hi": 10.241,
+        "p_holm": 1.0
+      },
+      {
+        "city": "fortaleza",
+        "comparator": "seasonal_naive",
+        "smape_comparator": 69.645,
+        "diff_smape": -5.445,
+        "diff_lo": -17.947,
+        "diff_hi": 5.454,
+        "p_holm": 1.0
+      },
+      {
+        "city": "manaus",
+        "comparator": "seasonal_naive",
+        "smape_comparator": 59.082,
+        "diff_smape": -3.044,
+        "diff_lo": -14.572,
+        "diff_hi": 7.37,
+        "p_holm": 1.0
+      },
+      {
+        "city": "recife",
+        "comparator": "randomforest",
+        "smape_comparator": 81.222,
+        "diff_smape": -13.954,
+        "diff_lo": -31.315,
+        "diff_hi": -0.568,
+        "p_holm": 1.0
+      },
+      {
+        "city": "rio",
+        "comparator": "seasonal_naive",
+        "smape_comparator": 104.103,
+        "diff_smape": -7.3,
+        "diff_lo": -20.034,
+        "diff_hi": 5.513,
+        "p_holm": 1.0
+      },
+      {
+        "city": "salvador",
+        "comparator": "xgboost",
+        "smape_comparator": 72.081,
+        "diff_smape": -3.226,
+        "diff_lo": -16.555,
+        "diff_hi": 11.919,
+        "p_holm": 1.0
+      },
+      {
+        "city": "sao",
+        "comparator": "seasonal_naive",
+        "smape_comparator": 77.61,
+        "diff_smape": 0.395,
+        "diff_lo": -16.236,
+        "diff_hi": 12.925,
+        "p_holm": 1.0
+      }
+    ],
+    "n_cities_timesfm_sig_better_holm": 0,
+    "n_tests_sig_better": 16,
+    "n_tests_sig_worse": 0,
+    "n_tests": 56,
+    "cities_model_worse_than_naive": {
+      "timesfm": [
+        "belo",
+        "brasilia",
+        "sao"
+      ],
+      "catboost": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "rio",
+        "sao"
+      ],
+      "xgboost": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "rio",
+        "sao"
+      ],
+      "randomforest": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "rio",
+        "sao"
+      ],
+      "lgbm": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "recife",
+        "rio",
+        "sao"
+      ],
+      "sarimax": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "recife",
+        "rio",
+        "salvador",
+        "sao"
+      ],
+      "prophet": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "recife",
+        "rio",
+        "salvador",
+        "sao"
+      ]
+    }
+  },
+  "pre2024": {
+    "mean_smape": {
+      "timesfm": 74.0,
+      "catboost_log": 70.1,
+      "xgboost_log": 76.8,
+      "randomforest_log": 71.5,
+      "lgbm_log": 80.9,
+      "sarimax_log": 83.1,
+      "prophet_log": 77.3,
+      "seasonal_naive": 78.2
+    },
+    "median_smape": {
+      "timesfm": 70.6,
+      "catboost_log": 70.1,
+      "xgboost_log": 74.1,
+      "randomforest_log": 70.6,
+      "lgbm_log": 79.8,
+      "sarimax_log": 82.6,
+      "prophet_log": 77.7,
+      "seasonal_naive": 75.2
+    },
+    "mean_mase": {
+      "timesfm": 0.74,
+      "catboost_log": 0.77,
+      "xgboost_log": 0.87,
+      "randomforest_log": 0.79,
+      "lgbm_log": 0.89,
+      "sarimax_log": 1.6,
+      "prophet_log": 0.87,
+      "seasonal_naive": 0.97
+    },
+    "first_place_smape": {
+      "timesfm": 3,
+      "catboost_log": 3,
+      "xgboost_log": 0,
+      "randomforest_log": 1,
+      "lgbm_log": 0,
+      "sarimax_log": 0,
+      "prophet_log": 1,
+      "seasonal_naive": 0
+    },
+    "first_place_mase": {
+      "timesfm": 5,
+      "catboost_log": 1,
+      "xgboost_log": 0,
+      "randomforest_log": 0,
+      "lgbm_log": 0,
+      "sarimax_log": 0,
+      "prophet_log": 2,
+      "seasonal_naive": 0
+    },
+    "timesfm_vs_best_comparator": [
+      {
+        "city": "belo",
+        "comparator": "catboost_log",
+        "smape_comparator": 57.06,
+        "diff_smape": 38.447,
+        "diff_lo": 20.068,
+        "diff_hi": 59.482,
+        "p_holm": 0.044
+      },
+      {
+        "city": "brasilia",
+        "comparator": "seasonal_naive",
+        "smape_comparator": 72.607,
+        "diff_smape": -0.251,
+        "diff_lo": -9.642,
+        "diff_hi": 11.256,
+        "p_holm": 1.0
+      },
+      {
+        "city": "fortaleza",
+        "comparator": "randomforest_log",
+        "smape_comparator": 68.339,
+        "diff_smape": -1.878,
+        "diff_lo": -12.274,
+        "diff_hi": 10.173,
+        "p_holm": 1.0
+      },
+      {
+        "city": "manaus",
+        "comparator": "prophet_log",
+        "smape_comparator": 49.755,
+        "diff_smape": 4.353,
+        "diff_lo": -1.069,
+        "diff_hi": 11.736,
+        "p_holm": 1.0
+      },
+      {
+        "city": "recife",
+        "comparator": "catboost_log",
+        "smape_comparator": 65.296,
+        "diff_smape": 1.362,
+        "diff_lo": -9.883,
+        "diff_hi": 15.515,
+        "p_holm": 1.0
+      },
+      {
+        "city": "rio",
+        "comparator": "randomforest_log",
+        "smape_comparator": 91.247,
+        "diff_smape": 4.752,
+        "diff_lo": -8.543,
+        "diff_hi": 18.048,
+        "p_holm": 1.0
+      },
+      {
+        "city": "salvador",
+        "comparator": "catboost_log",
+        "smape_comparator": 70.751,
+        "diff_smape": -1.254,
+        "diff_lo": -12.418,
+        "diff_hi": 10.315,
+        "p_holm": 1.0
+      },
+      {
+        "city": "sao",
+        "comparator": "catboost_log",
+        "smape_comparator": 69.44,
+        "diff_smape": 2.299,
+        "diff_lo": -9.903,
+        "diff_hi": 19.818,
+        "p_holm": 1.0
+      }
+    ],
+    "n_cities_timesfm_sig_better_holm": 0,
+    "n_tests_sig_better": 1,
+    "n_tests_sig_worse": 1,
+    "n_tests": 56,
+    "cities_model_worse_than_naive": {
+      "timesfm": [
+        "belo"
+      ],
+      "catboost_log": [
+        "brasilia",
+        "fortaleza"
+      ],
+      "xgboost_log": [
+        "brasilia",
+        "fortaleza",
+        "sao"
+      ],
+      "randomforest_log": [
+        "brasilia"
+      ],
+      "lgbm_log": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "sao"
+      ],
+      "sarimax_log": [
+        "belo",
+        "brasilia",
+        "fortaleza",
+        "manaus",
+        "recife",
+        "sao"
+      ],
+      "prophet_log": [
+        "brasilia",
+        "rio"
+      ]
+    }
+  },
+  "n_origins_full": 121,
+  "n_origins_pre2024": 109,
+  "first_origin": "2014-01-01",
+  "last_origin": "2024-01-01",
+  "reproducibility_max_abs_diff_smape": 0.45973118687624037,
+  "bootstrap": {
+    "n_boot": 2000,
+    "block": 12,
+    "seed": 20260928
+  }
+}
