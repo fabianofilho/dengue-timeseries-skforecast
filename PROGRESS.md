@@ -1,3 +1,5 @@
+> **ARQUIVADO em 2026-10-04.** O repositório canônico deste estudo é o privado `fabianofilho/dengue-time-series` (projeto DFP no Linear), com alvo PLOS NTD e coautores José Trajano, Wilson Falco e Alexandre Chiavegatto Filho. As correções feitas aqui (modelos treinados em log1p e IC que respeita a sobreposição das janelas) foram portadas para lá como emenda exploratória. A conversão para o template LaTeX da PLOS em `paper/plos/` serve de modelo. Não submeter o manuscrito deste repositório.
+
 # PROGRESS — dengue-timeseries-skforecast
 
 Atualizado em 2026-09-29 (versão LaTeX PLOS).
